@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.coin.mapper.BoardMapper">
+	<select id="selectBoard" parameterType="map" resultType="board">
+		select * from (select b.*, ceil(rownum/5)  as pageno from 
+		(select * from board_list order by bno desc) b)
+		where pageno = #{pageNo} and code = #{code}
+	</select>
+	<select id="selectBoardNo" resultType="int">
+		select board_no_seq.nextval from dual
+	</select>
+	<select id="selectBoardContent" parameterType="int" resultType="board">
+		select b.bno, b.title, b.writer, b.bdate, b.bcontent, b.bcount,
+		(select count(*) from COIN_BOARD_LIKE bl where b.bno = bl.bno) as blike,
+		(select count(*) from COIN_BOARD_hate bh where b.bno = bh.bno) as bhate 
+		from coin_board b where b.bno = #{bno} order by bno desc
+	</select>
+	<insert id="insertBoard" parameterType="board">
+		insert into coin_board(bno,title,writer,bdate,bcontent,bcount,code)
+		values(#{bno},#{title},#{writer},sysdate,#{bcontent},0,#{code})
+	</insert>
+	<update id="updateBoard" parameterType="map">
+		update coin_board set title=#{title},bcontent=#{bcontent} where bno = #{bno}
+	</update>
+	<delete id="deleteBoard" parameterType="int">
+		delete from coin_board where bno = #{bno}
+	</delete>
+	<insert id="insertBoardLike" parameterType="map">
+		insert into coin_board_like values(#{bno},#{id})
+	</insert>
+	<delete id="deleteBoardLike" parameterType="map">
+		delete from coin_board_like where bno = #{bno} and id like #{id}
+	</delete>
+	<insert id="insertBoardHate" parameterType="map">
+		insert into coin_board_hate values(#{bno},#{id})
+	</insert>
+	<delete id="deleteBoardHate" parameterType="map">
+		delete from coin_board_hate where bno = #{bno} and id like #{id}
+	</delete>
+	<select id="selectBoardCount" resultType="int">
+		select count(*) from coin_board
+	</select>
+	<update id="addBoardCount" parameterType="int">
+		update coin_board set bcount = bcount + 1 where bno = #{bno}
+	</update>
+</mapper>

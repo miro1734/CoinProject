@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.coin.mapper.CommentMapper">
+	<select id="selectComment" parameterType="int" resultType="comment">
+		select c.* from comment_list c where c.bno = #{bno} order by c.cno asc
+	</select>
+	<select id="selectCommentNo" resultType="int">
+		select comment_no_seq.nextval from dual
+	</select>
+	<insert id="insertComment" parameterType="comment">
+		insert into coin_board_comment(cno,ccontent,cdate,bno,cwriter)
+		values(#{cno},#{ccontent},sysdate,#{bno},#{cwriter})
+	</insert>
+	<update id="updateComment" parameterType="map">
+		update coin_board_comment set ccontent=#{ccontent}where cno = #{cno}
+	</update>
+	<delete id="deleteComment" parameterType="int">
+		delete coin_board_comment where cno = #{cno}
+	</delete>
+</mapper>

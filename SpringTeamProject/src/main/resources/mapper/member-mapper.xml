@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.coin.mapper.MemberMapper">
+	<insert id="insertCoinMember" parameterType="map">
+		insert into coin_member(id,passwd,name,email,krw)
+		values(#{id},#{passwd},#{name},#{email},1000000)
+	</insert>
+	<select id="idCheck" parameterType="String" resultType="member">
+		select * from coin_member where id = #{id}
+	</select>
+	<select id="login" parameterType="map" resultType="member">
+		select * from coin_member where id = #{id} and passwd = #{passwd}
+	</select>
+	<select id="selectPosition" parameterType="map" resultType="member">
+		select * from positioned_coin where id = #{id} and code = #{code}
+	</select>
+	<insert id="insertPosition" parameterType="map">
+		insert into positioned_coin values(positioned_no_seq.nextval, #{code}, #{count}, #{id}, #{price}, #{trade_price})
+	</insert>
+	<update id="updatePositionBuy" parameterType="map">
+		update positioned_coin set count = count + #{count}, price = price + #{price}, trade_price = (trade_price + #{trade_price}) / 2 where id = #{id} and code = #{code}
+	</update>
+	<update id="updatePriceBuy" parameterType="map">
+		update coin_member set krw = krw - #{price} where id = #{id}
+	</update>
+	<select id="selectMember" parameterType="String" resultType="member">
+		select * from coin_member where id = #{id}
+	</select>
+	<select id="selectPrice" parameterType="map" resultType="String">
+		select price from positioned_coin where id = #{id} and code = #{code}
+	</select>
+	<update id="updatePositionSell" parameterType="map">
+		update positioned_coin set count = count - #{count}, price = price - #{price} where id = #{id} and code = #{code}
+	</update>
+	<update id="updatePriceSell" parameterType="map">
+		update coin_member set krw = krw + #{price} where id = #{id}
+	</update>
+	<select id="selectPositionMoney" parameterType="String" resultType="String">
+		select price from positioned_coin where id = #{id}
+	</select>
+	<select id="selectPositionCount" parameterType="map" resultType="String">
+		select count from positioned_coin where id = #{id} and code = #{code}
+	</select>
+	<update id="updatePositionCount" parameterType="String">
+		update positioned_coin set price = 0 where count = 0
+	</update>
+	<insert id="insertFavoriteCoin" parameterType="map">
+		insert into favorite_coin values (favorite_no_seq.nextval, #{code}, #{id})
+	</insert>
+	<delete id="deleteFavoriteCoin" parameterType="map">
+		delete from favorite_coin where id = #{id} and code = #{code}
+	</delete>
+	<select id="selectFavoriteCoin" parameterType="map" resultType="String">
+		select * from favorite_coin where id = #{id} and code = #{code}
+	</select>
+
+	<select id="selectAllPosition" resultType="map">
+		select code, count, price, trade_price from positioned_coin where id = #{id}
+	</select>
+	<select id="selectAllFavorite" resultType="map">
+		select * from favorite_coin where id = #{id}
+	</select>
+	<delete id="deleteFavorite" parameterType="int">
+		delete from favorite_coin where ino = #{ino}
+	</delete>
+	
+	<select id="updateMember" parameterType="map">
+		update coin_member set passwd = #{passwd}, name = #{name}, email = #{email} where id = #{id}
+	</select>
+</mapper>
