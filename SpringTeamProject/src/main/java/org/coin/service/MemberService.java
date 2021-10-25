@@ -162,6 +162,7 @@ public class MemberService {
 		map.put("email", email);
 		mapper.updateMember(map);
 	}
+	
 	public List<MemberDTO> selectAllMember() {
 		return mapper.selectAllMember();
 	}

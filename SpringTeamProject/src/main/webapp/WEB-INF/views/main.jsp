@@ -40,7 +40,6 @@ function selectAllNews(r) {
 	        mode : 'vertical',
 	        auto : false,
 	        speed : 200,
-	        maxSlides : 5,
 	        minSlides : 6,
 	        infiniteLoop : false
 	    });
@@ -105,10 +104,48 @@ function coinList() {
         }
     });
 }
-$(function () {
-	coinList();
-	setInterval(coinList, 500);
 
+// 실시간 채팅 처리 부분
+var chat_id = "${sessionScope.client.name}";	
+var webSocket = new WebSocket("ws://localhost:9999/ws/login.do"); // 웹소켓 핸드쉐이크 연결
+
+function enterKey() { // 엔터키를 누르면 채팅을 전송하는 부분
+	$(".input_message").keyup(function(){
+		if (event.keyCode == 13)
+			send();
+	});
+}
+function onMessage(msg) {
+	var data = msg.data;
+	var sessionId = null;
+	var message = null;
+	var arr = data.split(":");
+	/* for (i = 0; i <arr.length; i++) {  -메시지가 제대로 파싱되나 확인용이었음
+		console.log("arr[" + i + "]:" + arr[i]);
+	} */
+	sessionId = arr[0]; // 파싱된 클라이언트 이름
+	message = arr[1]; // 파싱된 메시지
+	var str = "<div class = 'box_msg'>";
+	str += sessionId + " : " + message;
+	str += "</div>";	
+	$(".message_window").append(str);
+}
+
+function send() { // 채팅을 보내는 부분
+	console.log(chat_id + ":" + $(".input_message").val());
+	webSocket.send(chat_id + ":" + $(".input_message").val());
+	$(".input_message").val("");
+}
+
+$(function () {
+	webSocket.onmessage = onMessage;
+	coinList();
+	enterKey();
+	setInterval(coinList, 500);
+	setInterval(function() { // 채팅 창 스크롤이 항상 아래에 위치하게 하는 함수
+		var scroll = $(".message_window");
+		scroll.scrollTop = scroll.scrollHeight;
+	}, 0);
     $(".news_write	").click(news_write);
     $(".btn_news").click(btn_news);
     $(".news_delete").click(news_delete);
@@ -181,22 +218,24 @@ $(function () {
         .news_container2 {
         	background-color: #e9e9e9;
         	width: 100%;
-        	height: 60px;
+        	height: 100px;
         	padding: 10px;
         	box-sizing: border-box;
         	border-radius: 5px;
         }
         .bx-wrapper {
         	width: 600px;
-        	height: 210px;
+        	height: 330px;
         	border: none;
             box-shadow: none;
             margin-bottom: 0;
      	}
+     	.chat_container .bx-wrapper, .chat_container .bx-viewport{
+     		height: 240px;
+     	}
      	.news_container {
      		width: 600px;
-     		height: 250px;
-     		position: relative;
+     		height: 330px;
      	}
         .ndate {
         	color: #c9c9c9;
@@ -208,7 +247,7 @@ $(function () {
         .blank {
         	height: 10px;
         }
-        .bx-wrapper .bx-controls-direction a {
+       .bx-wrapper .bx-controls-direction a {
        		top : -15px;
        		transform:rotate(90deg);
        }
@@ -223,9 +262,33 @@ $(function () {
        		display: none;
        }
        .main_container {
+      		width: 1600px;
        		display: flex;
        		justify-content: space-between;
        		padding: 40px;
+       }
+       .sub_container {
+       	height: 648px;
+       }
+       .chat_container {
+       	margin-top : 80px;
+       	box-sizing : border-box;
+       	height: 240px;
+       }
+       .price_container {
+       	margin-left : 50px;
+       }
+       fieldset {
+       	height: 100%;
+       }
+       .box_msg {
+       	height: 21px;	
+       }
+       .slider {
+       	height: 330px;
+       }
+       .message_window {
+       	height: 240px;
        }
 </style>
 </head>
@@ -245,13 +308,20 @@ $(function () {
 		        		</div>
 		        		<div class="blank"></div>
 		        </c:forEach>
-		    </div>
-		    <div class="news_write">글쓰기</div>
+		    </div><div class="news_write">글쓰기</div>
 		    <form>
 		    	<input type="text" name="headline">
 		    	<button type="button" class="btn_news">작성</button>
 		    </form>
 	    </div>
+		<div class="chat_container">
+			<fieldset>
+					<div class="message_window">
+					</div>
+				<br><input type="text" class="input_message">
+				<input type="submit" value="전송" id="btn_send">
+			</fieldset>
+		</div>
 	</div>
 	<div class="price_container">
         <h2>실시간 시세</h2>

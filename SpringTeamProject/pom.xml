@@ -18,6 +18,18 @@
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-websocket</artifactId>
+    <version>5.3.10</version><!--$NO-MVN-MAN-VER$-->
+</dependency>
+<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
+<dependency>
+    <groupId>javax.websocket</groupId>
+    <artifactId>javax.websocket-api</artifactId>
+    <version>1.1</version><!--$NO-MVN-MAN-VER$-->
+    <scope>provided</scope>
+</dependency>
 			<dependency>
 		<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -102,7 +114,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

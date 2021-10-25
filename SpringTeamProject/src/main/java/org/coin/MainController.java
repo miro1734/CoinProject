@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.websocket.server.ServerEndpoint;
 
 import org.coin.dto.BoardDTO;
 import org.coin.dto.CommentDTO;
@@ -21,6 +22,7 @@ import org.coin.service.NewsService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -43,14 +45,19 @@ public class MainController {
 	public String index() {
 		return "index";
 	}
-
 	@RequestMapping("login.do") // 메인 페이지로 이동하면서 뉴스 게시판 내용 불러오는 부분 - 김경환
-	public String main(HttpServletRequest request,HttpServletResponse response, HttpSession session) throws IOException {
-		response.setContentType("text/html;charset=utf-8;");
-		String id = request.getParameter("userID");
-		String passwd = request.getParameter("userPassword");
-		if(id.equals("admin") && passwd.equals("1234")) {//관리자페이지로 이동 - 김예찬 10/22
-			return "redirect:adminSelect.do";
+	public String main(HttpServletRequest request, HttpSession session) {
+		String id;
+		String passwd;
+		if (session.getAttribute("client") == null) {
+			id = request.getParameter("userID");
+			passwd = request.getParameter("userPassword");
+			if(id.equals("admin") && passwd.equals("1234")) {//관리자페이지로 이동 - 김예찬 10/22
+				return "redirect:adminSelect.do";
+			}
+		} else {
+			id = ((MemberDTO) session.getAttribute("client")).getId();
+			passwd = ((MemberDTO) session.getAttribute("client")).getPasswd();
 		}
 		MemberDTO dto = memberService.login(id, passwd);
 		List<NewsDTO> news = newsService.selectAllNews();
@@ -59,22 +66,6 @@ public class MainController {
 		return "main";
 	}
 	
-	@RequestMapping("adminSelect.do") // 가입자 불러오기 - 김예찬 - 10/22
-	public String adminSelect(HttpServletRequest request) {
-		List<MemberDTO> list = memberService.selectAllMember();
-		request.setAttribute("list", list);
-		return "admin/adminPage";
-	}
-	@RequestMapping("adminDelete.do") // 가입자 제명 - 김예찬 - 10/22
-	public String adminDelete(HttpServletRequest request,HttpServletResponse response) throws IOException {
-		response.setContentType("text/html;charset=utf-8");
-		String id = request.getParameter("id");
-		memberService.deleteMember(id);
-		List<MemberDTO> list = memberService.selectAllMember();
-		request.setAttribute("list", list);
-		return "redirect:/adminSelect.do";
-	}
-
 	@RequestMapping("newsWrite.do") // 관리자 계정으로 뉴스 게시판 글 작성하는 부분, ajax로 jsonArray 리턴 - 김경환
 	public String newsWrite(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.setContentType("text/html;charset=utf-8;");
@@ -89,6 +80,23 @@ public class MainController {
 		return null;
 	}
 
+	@RequestMapping("adminSelect.do") // 가입자 불러오기 - 김예찬 - 10/22
+	public String adminSelect(HttpServletRequest request) {
+		List<MemberDTO> list = memberService.selectAllMember();
+		request.setAttribute("list", list);
+		return "admin/adminPage";
+	}
+	
+	@RequestMapping("adminDelete.do") // 가입자 제명 - 김예찬 - 10/22
+	public String adminDelete(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		response.setContentType("text/html;charset=utf-8");
+		String id = request.getParameter("id");
+		memberService.deleteMember(id);
+		List<MemberDTO> list = memberService.selectAllMember();
+		request.setAttribute("list", list);
+		return "redirect:/adminSelect.do";
+	}
+	
 	@RequestMapping("delete.do") // 관리자 계정으로 뉴스 게시판 글 삭제 - 김경환
 	public String newsDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.setContentType("text/html;charset=utf-8");
@@ -201,9 +209,10 @@ public class MainController {
 		response.getWriter().write("<script>history.back();</script>");
 		return null;
 	}
-	
+
 	@RequestMapping("insertFavoriteCoin.do") // 관심종목 지정 기능 - 김경환 10/21
-	public String insertFavoriteCoin(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+	public String insertFavoriteCoin(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws IOException {
 		response.setContentType("text/html;charset=utf-8");
 		String id = ((MemberDTO) session.getAttribute("client")).getId();
 		String code = ((String) session.getAttribute("code"));
@@ -219,9 +228,10 @@ public class MainController {
 		response.getWriter().write(obj.toString());
 		return null;
 	}
-	
-	@RequestMapping("deleteFavoriteCoin.do") // 관심 종목 제거
-	public String deleteFavoriteCoin(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+
+	@RequestMapping("deleteFavoriteCoin.do") // 관심 종목 제거 - 김경환
+	public String deleteFavoriteCoin(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws IOException {
 		response.setContentType("text/html;charset=utf-8");
 		String id = ((MemberDTO) session.getAttribute("client")).getId();
 		String code = ((String) session.getAttribute("code"));
@@ -237,7 +247,7 @@ public class MainController {
 		response.getWriter().write(obj.toString());
 		return null;
 	}
-	
+
 	@RequestMapping("registerView.do") // 회원가입 페이지로 이동 - 최진욱
 	public String main() {
 		return "member/join";
@@ -280,33 +290,34 @@ public class MainController {
 	public String memberUpdateView() {
 		return "member/member_update";
 	}
-	
-	@RequestMapping("memberUpdate.do")//회원수정 페이지 - 최진욱 10/21
-	public String memberUpdate(HttpServletRequest request,RedirectAttributes redirectAttributes, HttpSession session) throws IOException {
+
+	@RequestMapping("memberUpdate.do") // 회원수정 페이지 - 최진욱 10/21
+	public String memberUpdate(HttpServletRequest request, RedirectAttributes redirectAttributes, HttpSession session)
+			throws IOException {
 		String id = request.getParameter("id");
 		String passwd = request.getParameter("pass");
-		String name = request.getParameter("name") ;
+		String name = request.getParameter("name");
 		String email = request.getParameter("email");
-		
-		memberService.updateMember(id,passwd,name,email);
+
+		memberService.updateMember(id, passwd, name, email);
 		MemberDTO dto = memberService.login(id, passwd);
 		session.setAttribute("client", dto);
-		return "redirect:login.do?userID="+dto.getId()+"&userPassword="+dto.getPasswd();
+		return "redirect:login.do?userID=" + dto.getId() + "&userPassword=" + dto.getPasswd();
 	}
-	
+
 	@RequestMapping("boardWriteView.do") // 페이지 이동 - 김예찬 10/16
 	public String boardWriteView() {
 		return "board/board_write";
 	}
 
 	@RequestMapping("boardWrite.do") // 게시판 글 작성 - 김예찬 10/18
-	public String boardwrite(HttpServletRequest request,HttpServletResponse response, HttpSession session) {
+	public String boardwrite(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		String title = request.getParameter("title");
 		String bcontent = request.getParameter("bcontent");
-		String writer = ((MemberDTO)session.getAttribute("client")).getId();
+		String writer = ((MemberDTO) session.getAttribute("client")).getId();
 		String code = (String) session.getAttribute("code");
-		int bno = boardService.insertBoard(new BoardDTO(0,title,writer,null,bcontent,0,0,0,code));
-		return "redirect:coinInfo.do?code="+code;
+		int bno = boardService.insertBoard(new BoardDTO(0, title, writer, null, bcontent, 0, 0, 0, code));
+		return "redirect:coinInfo.do?code=" + code;
 	}
 
 	@RequestMapping("boardView.do") // 게시판 글 보기 페이지로 이동 - 김예찬 10/16
@@ -347,39 +358,40 @@ public class MainController {
 		int bno = Integer.parseInt(request.getParameter("bno"));
 		boardService.deleteBoard(bno);
 		String code = (String) session.getAttribute("code");
-		return "redirect:coinInfo.do?code="+code;
+		return "redirect:coinInfo.do?code=" + code;
 	}
 
 	@RequestMapping("insertCcontent.do") // 댓글 작성 - 김예찬 10/18
-	public String ccontentwrite(HttpServletRequest request, HttpSession session){
+	public String ccontentwrite(HttpServletRequest request, HttpSession session) {
 		String ccontent = request.getParameter("ccontent");
-		String cwriter = ((MemberDTO)session.getAttribute("client")).getId();
+		String cwriter = ((MemberDTO) session.getAttribute("client")).getId();
 		int bno = Integer.parseInt(request.getParameter("bno"));
-		
-		int cno = commentService.insertCcontent(new CommentDTO(0,ccontent,null,bno,cwriter));
-		return "redirect:boardView.do?bno="+bno;
+
+		int cno = commentService.insertCcontent(new CommentDTO(0, ccontent, null, bno, cwriter));
+		return "redirect:boardView.do?bno=" + bno;
 	}
-	
+
 	@RequestMapping("updateCcontent.do") // 댓글 수정 - 김예찬 10/19
-	public String updatecComment(HttpServletRequest request, RedirectAttributes redirectAttributes ,HttpSession session) {
+	public String updatecComment(HttpServletRequest request, RedirectAttributes redirectAttributes,
+			HttpSession session) {
 		String ccontent = request.getParameter("updateCcontent");
 		int bno = Integer.parseInt(request.getParameter("bno"));
 		int cno = Integer.parseInt(request.getParameter("cno"));
-		
-		commentService.updateComment(cno,ccontent);
-		redirectAttributes.addAttribute("bno",bno);
+
+		commentService.updateComment(cno, ccontent);
+		redirectAttributes.addAttribute("bno", bno);
 		return "redirect:boardView.do";
 	}
-	
+
 	@RequestMapping("commentDelete.do") // 댓글 삭제 - 김예찬 10/19
 	public String deleteComment(HttpServletRequest request, RedirectAttributes redirectAttributes) {
 		int bno = Integer.parseInt(request.getParameter("bno"));
 		int cno = Integer.parseInt(request.getParameter("cno"));
-		redirectAttributes.addAttribute("bno",bno);
+		redirectAttributes.addAttribute("bno", bno);
 		commentService.deleteComment(cno);
 		return "redirect:boardView.do";
 	}
-	
+
 	@RequestMapping("boardLike.do") // 게시판 좋아요 기능 - 김예찬 10/14
 	public String boardLike(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		int bno = Integer.parseInt(request.getParameter("bno"));
@@ -419,10 +431,10 @@ public class MainController {
 		response.getWriter().write(json.toString());
 		return null;
 	}
-	
+
 	@RequestMapping("mypageView.do") // 마이페이지로 이동 - 엄상원 10/21
 	public String mypageView(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		String id = ((MemberDTO)session.getAttribute("client")).getId();	
+		String id = ((MemberDTO) session.getAttribute("client")).getId();
 		List<Map<String, Object>> flist = memberService.selectAllFavorite(id);
 		request.setAttribute("flist", flist);
 		List<Map<String, Object>> plist = memberService.selectAllPosition(id);
@@ -430,11 +442,12 @@ public class MainController {
 		System.out.println("plist : " + plist.toString());
 		return "member/mypage";
 	}
-	
+
 	@RequestMapping("favoritedelete.do") // 마이페이지 관심종목 삭제 - 엄상원 10/21
-	public String favoriteDelete(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+	public String favoriteDelete(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws IOException {
 		response.setContentType("text/html;charset=utf-8");
-		String id = ((MemberDTO)session.getAttribute("client")).getId();
+		String id = ((MemberDTO) session.getAttribute("client")).getId();
 		int ino = Integer.parseInt(request.getParameter("ino"));
 		if (ino == 0) {
 			response.getWriter().write("<script>alert('삭제 실패');history.back()</script>");

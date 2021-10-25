@@ -14,10 +14,7 @@ function coinList() {
         url: "https://api.upbit.com/v1/ticker?markets=KRW-BTC,KRW-XRP,KRW-OMG,KRW-ETH,KRW-ELF,KRW-DOGE,KRW-EOS,KRW-XLM,KRW-MATIC,KRW-TRX",
         data: "get",
         dataType: "json",
-        success: function (d) {
-        	
-        	
-        		
+        success: function (d) {	
         	for (i = 0; i < 10; i++) {
         		tp = d[i].trade_price;
         		mp = ${requestScope.plist[1].TRADE_PRICE};
@@ -28,8 +25,7 @@ function coinList() {
                 if (d[i].change == "RISE") {
                     $(".price" + i).html(d[i].trade_price).css("color", "red");
                     $(".change_rate" + i).html("+" + (d[i].change_rate * 100).toFixed(2) + "%").css("color", "red");
-                    $(".change_price" + i).html(d[i].change_price).css("color", "red");
-                    
+                    $(".change_price" + i).html(d[i].change_price).css("color", "red");                
                 }
                 else {
                     $(".price" + i).html(d[i].trade_price).css("color", "blue");
@@ -44,7 +40,6 @@ $(function () {
 	coinList();
 	setInterval(coinList, 500);
 	favorite_delete();
-	
 	
 	$("#KRW-BTC").click(function(){
     	location.href = "coinInfo.do?code=KRW-BTC&name=비트코인";
@@ -87,8 +82,7 @@ function favorite_delete() {
 			dataType:"json",
 			type:"get",
 			success:function(r){
-				selectAllFavorite(r);
-				
+				selectAllFavorite(r);				
 			}
 		});
 	});

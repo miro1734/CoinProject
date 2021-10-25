@@ -69,6 +69,7 @@
 	<select id="updateMember" parameterType="map">
 		update coin_member set passwd = #{passwd}, name = #{name}, email = #{email} where id = #{id}
 	</select>
+	<!-- 10/25  -->
 	<select id="selectAllMember" resultType="member">
 		select * from coin_member
 	</select>
