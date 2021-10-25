@@ -57,4 +57,8 @@ public interface MemberMapper {
 
 	
 	public void updateMember(HashMap<String, Object> map);
+	
+	public List<MemberDTO> selectAllMember();
+
+	public void deleteMember(String id);
 }

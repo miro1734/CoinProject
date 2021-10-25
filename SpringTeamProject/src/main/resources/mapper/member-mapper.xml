@@ -69,4 +69,10 @@
 	<select id="updateMember" parameterType="map">
 		update coin_member set passwd = #{passwd}, name = #{name}, email = #{email} where id = #{id}
 	</select>
+	<select id="selectAllMember" resultType="member">
+		select * from coin_member
+	</select>
+	<delete id="deleteMember" parameterType="Object">
+		delete from coin_member where id = #{id}
+	</delete>
 </mapper>

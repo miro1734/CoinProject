@@ -45,14 +45,34 @@ public class MainController {
 	}
 
 	@RequestMapping("login.do") // 메인 페이지로 이동하면서 뉴스 게시판 내용 불러오는 부분 - 김경환
-	public String main(HttpServletRequest request, HttpSession session) {
+	public String main(HttpServletRequest request,HttpServletResponse response, HttpSession session) throws IOException {
+		response.setContentType("text/html;charset=utf-8;");
 		String id = request.getParameter("userID");
 		String passwd = request.getParameter("userPassword");
+		if(id.equals("admin") && passwd.equals("1234")) {//관리자페이지로 이동 - 김예찬 10/22
+			return "redirect:adminSelect.do";
+		}
 		MemberDTO dto = memberService.login(id, passwd);
 		List<NewsDTO> news = newsService.selectAllNews();
 		request.setAttribute("list", news);
 		session.setAttribute("client", dto);
 		return "main";
+	}
+	
+	@RequestMapping("adminSelect.do") // 가입자 불러오기 - 김예찬 - 10/22
+	public String adminSelect(HttpServletRequest request) {
+		List<MemberDTO> list = memberService.selectAllMember();
+		request.setAttribute("list", list);
+		return "admin/adminPage";
+	}
+	@RequestMapping("adminDelete.do") // 가입자 제명 - 김예찬 - 10/22
+	public String adminDelete(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		response.setContentType("text/html;charset=utf-8");
+		String id = request.getParameter("id");
+		memberService.deleteMember(id);
+		List<MemberDTO> list = memberService.selectAllMember();
+		request.setAttribute("list", list);
+		return "redirect:/adminSelect.do";
 	}
 
 	@RequestMapping("newsWrite.do") // 관리자 계정으로 뉴스 게시판 글 작성하는 부분, ajax로 jsonArray 리턴 - 김경환
