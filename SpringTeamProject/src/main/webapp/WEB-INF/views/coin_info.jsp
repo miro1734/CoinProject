@@ -638,6 +638,7 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 <!-- ---------------------예찬님 body ------------------------------------------------------------------ -->
 	
 	<hr>
+	<input type="hidden" value="${d = requestScope.list.size() }">
 	<table>
 	
 	<tr>
@@ -649,15 +650,19 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 		<th>좋아요</th>
 		<th>싫어요</th>
 	</tr>
-	<c:forEach var="board" items="${requestScope.list }">
-	<tr>
-		<td>${board.bno }</td>
+	
+		
+	<c:forEach var="board" items="${requestScope.list }" >
+	<tr> 
+		<td>${d }</td>
+		<td style="display:none;">${board.bno }</td>
 		<td><a href="boardView.do?bno=${board.bno }">${board.title }</a></td>
 		<td>${board.writer }</td>
 		<td>${board.bdate }</td>
 		<td>${board.bcount }</td>
 		<td>${board.blike }</td>
 		<td>${board.bhate }</td>
+		<td style="display:none;">${d = d-1 }</td>
 	</tr>
 	</c:forEach>
 	<!-- 페이징 처리 -->
