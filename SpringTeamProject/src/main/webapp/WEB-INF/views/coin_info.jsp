@@ -20,6 +20,7 @@ var count;
 var positionMoney = Number("${requestScope.positionMoney}");
 var clientMoney = Number("${sessionScope.clinet.krw}");
 var position_coin_count = Number("${requestScope.positionCount}");
+var now_money = Number("${requestScope.now_money}");
 
 function coinPrice() { // 코인의 현재 가격을 불러오는 부분
 	$.ajax({
@@ -28,6 +29,7 @@ function coinPrice() { // 코인의 현재 가격을 불러오는 부분
 		dataType : "json",
 		success : function(r) {
 			$("#trade_price").val(r[0].trade_price);
+			$(".allMoney").html(now_money + (r[0].trade_price * position_coin_count) + " KRW");
 		}
 	});
 }
@@ -257,25 +259,11 @@ function buy_click() {
 		order_50();
 		order_100();
 		order_self();
+		sell_click();
 		$(".have_money").html(${requestScope.now_money} + " KRW");
 	});
 }
-
-$(function(){
-	checkIno();
-	timeControll();
-	coinPrice();
-	bitChart();
-	setInterval(bitChart, 500);
-	setInterval(coinPrice, 500);
-	buy_order();
-	order_10();
-	order_25();
-	order_50();
-	order_100();
-	order_self();
-	buy_click();
-	
+function sell_click() {
 	$("#btn_sell").click(function(){
 		$(".order_container").html("<button id='btn_order_sell'>주문하기</button>");
 		$(".trade_container").html("<input type='number' id='trade_qu_sell' min='0'><button type='button' id='plus2'>+</button><button type='button' id='minus2'>-</button>");
@@ -283,7 +271,7 @@ $(function(){
 		$("#btn_buy").css("background-color", "#e9e9e9").css("color", "black");
 		$(".buy_or_sell").html("매도가능");
 		console.log(position_coin_count);
-		$(".have_money").html(Math.floor((Number($("#trade_price").val()) * position_coin_count)) + " KRW");
+		$(".have_money").html(Math.floor((Number($("#trade_price").val() * position_coin_count))) + " KRW");
 		$(".count_buy_sell").html("매도 수량");
 		
 		$(".btn_10").click(function(){
@@ -293,7 +281,6 @@ $(function(){
 					money = (count * coin).toFixed(8);
 				} else {
 					count = Math.floor(position_coin_count / 10);
-					console.log("왜 버림이 안되냐~~" + Math.floor(position_coin_count / 10));	
 					money = Math.floor(money * coin);
 				}
 				$("#trade_qu_sell").val(count);
@@ -368,7 +355,7 @@ $(function(){
 				count = 0;
 			}
 			if (count > position_coin_count) {
-				if (${sessionScope.client.krw} < coin) {
+				if (positionMoney < coin) {
 					count = (money / coin).toFixed(8);
 			} else {
 				count = position_coin_count;
@@ -410,8 +397,23 @@ $(function(){
 			});
 		});
 	});
+}
+$(function(){
+	checkIno();
+	timeControll();
+	coinPrice();
+	bitChart();
+	setInterval(bitChart, 500);
+	setInterval(coinPrice, 500);
+	buy_order();
+	order_10();
+	order_25();
+	order_50();
+	order_100();
+	order_self();
+	buy_click();
+	sell_click();
 });
-
 function insertFavoriteCoin() {
 	$(".icon_star").click(function(){ // 관심 종목 지정하는 아이콘
 		$.ajax({
@@ -461,6 +463,7 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 	* {
 		margin: 0;
 		padding: 0;
+		text-decoration:none;
 	}
 	.btn_container {
 		display: flex;
@@ -506,14 +509,13 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 		font-size: 20px;
 	}
 	#trade_price {
-		width: 80%;
+		width: 100%;
 		height: 100%;
 		box-sizing: border-box;
 		border: none;
 		font-weight: bold;
 		font-size: 20px;
-		text-align: right;
-		padding-right: 10px;
+		text-align: center;
 	}
 	#trade_qu_buy, #trade_qu_sell{
 		width: 80%;
@@ -594,14 +596,14 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 		<div class="trade_view">
 			<button type="button" id="btn_buy">매수</button><button type="button" id="btn_sell">매도</button>
 			<div class="have_krw">
-				<span>보유자산</span><span class="allMoney">${requestScope.now_money + requestScope.allPositionMoney} KRW</span>
+				<span>보유자산</span><span class="allMoney">  KRW</span>
 			</div>
 			<div class="have_krw">
 				<span class="buy_or_sell">매수가능</span><span class="have_money">${requestScope.now_money} KRW</span>
 			</div>
 			<p id="price">가격</p>
 			<div class="trade_container_price">
-				<input type="text" id="trade_price"><button type="button" id="plus1">+</button><button type="button" id="minus1">-</button>
+			<input type="text" id="trade_price">
 			</div>
 			<p id="price">수량</p>
 			<div class="trade_container">

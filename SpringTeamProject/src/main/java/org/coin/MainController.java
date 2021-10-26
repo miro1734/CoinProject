@@ -55,11 +55,16 @@ public class MainController {
 		response.setContentType("text/html;charset=utf-8");
 		String id;
 		String passwd;
+		List<NewsDTO> news = newsService.selectAllNews();
+		List<MemberDTO> list = memberService.selectAllMember();
+		request.setAttribute("list", list);
+		request.setAttribute("news", news);
+		
 		if (session.getAttribute("client") == null) {
 			id = request.getParameter("userID");
 			passwd = request.getParameter("userPassword");
 			if(id.equals("admin") && passwd.equals("1234")) {//관리자페이지로 이동 - 김예찬 10/22
-				return "redirect:adminSelect.do";
+				return "admin/adminPage";
 			}
 		} else {
 			id = ((MemberDTO) session.getAttribute("client")).getId();
@@ -70,8 +75,6 @@ public class MainController {
 			response.getWriter().write("<script>alert('로그인 실패');history.back();</script>");
 			return null;
 		} 
-		List<NewsDTO> news = newsService.selectAllNews();
-		request.setAttribute("list", news);
 		session.setAttribute("client", dto);
 		return "main";
 	}

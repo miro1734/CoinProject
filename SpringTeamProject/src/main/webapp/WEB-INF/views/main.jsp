@@ -291,6 +291,7 @@ $(function () {
 </style>
 </head>
 <body>
+<h2>${sessionScope.client.id}님 로그인 </h2>
 <a href="mypageView.do">마이페이지</a>
 <a href="logout.do">로그아웃</a>
 <div class="main_container">
@@ -298,20 +299,15 @@ $(function () {
 	    <div class="news_container">
 	        <h2>뉴스</h2>
 	        <div class="slider">
-		        <c:forEach var="news" items="${requestScope.list}">
+		        <c:forEach var="news" items="${requestScope.news}">
 			        	<div class="news_container2">
 				        		<input name="nno" value="${news.nno}" type="hidden">
 					        	<p class="ndate">${news.ndate}</p>
 					        	<p class="heardline">${news.headline}</p>
-					        	<a href="#" class="news_delete">삭제</a>
 		        		</div>
 		        		<div class="blank"></div>
 		        </c:forEach>
-		    </div><div class="news_write">글쓰기</div>
-		    <form>
-		    	<input type="text" name="headline">
-		    	<button type="button" class="btn_news">작성</button>
-		    </form>
+		    </div>
 	    </div>
 		<div class="chat_container">
 			<fieldset>

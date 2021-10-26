@@ -104,6 +104,7 @@
 		width:500px;
 		height:100px;
 		box-sizing:border-box;
+		resize:none;
 	}
 	.ccontent_register{
 		top:0px;
@@ -118,9 +119,16 @@
 	background-color: #c4c4c4;
 	transform: translateY(1px);
 	}
+	header{
+		hegiht:200px;
+	}
 </style>
 </head>
 <body>
+	<header>
+	<a href="/"><img alt="" src="resource/img/logo.png" style="width:200px;height:70px;"></a>
+	
+	</header>
 	<table>
 		<tr style="height:50px;">
 			<td>제목 : ${requestScope.board.title}</td>
@@ -142,15 +150,16 @@
 			<input type="hidden" name="bno" value="${requestScope.board.bno}">
 			<input type="hidden" name="writer" value="${requestScope.board.writer}">
 			<textarea name="ccontent" placeholder="댓글을 입력해 주세요"></textarea> 
-			<button class="ccontent_register">등록하기</button>
+			<button class="ccontent_register" style="box-sizing:boder-box;background-color:#c4c4c4;">등록하기</button>
 			</form>
 			</td>
 		</tr>
 	</table>
 	<br>
+	<div style="text-align:center;margin-left:500px;">
 	<c:if test="${requestScope.board.writer == sessionScope.client.id }">
-		<button type="button" class="btnUpdate">수정</button>
-		<button type="button" class="btnDelete">삭제</button>
+		<button type="button" class="btnUpdate" style="width:50px;height:30px;background-color:#767d83;color:#fff;border-color: #767d83;">수정</button>
+		<button type="button" class="btnDelete" style="width:50px;height:30px;background-color: #f0ad4e;color:#fff;border-color: #eea236;">삭제</button>
 		<script type="text/javascript">
 			 		var btnDelete = document.querySelector(".btnDelete");
 			 		btnDelete.onclick = function(){
@@ -162,6 +171,7 @@
 			 		}
 		</script>
 		</c:if>
+		</div>
 	<br>
 	<table>
 		<tr style="height:25px;">
@@ -177,12 +187,12 @@
 			<td style="display:none;" class="cno">${comment.cno}</td>
 			<td style="width:40px;text-align:center;"><%=cnno++%></td>
 			<td style="padding-left:4px;" class="ct_update">${comment.ccontent}</td>
-			<td style="width:80px;">${comment.cwriter }</td>
-			<td style="width:100px;">${comment.cdate }</td>
-			<td style="width:80px;">
+			<td style="width:80px;text-align:center;">${comment.cwriter }</td>
+			<td style="width:100px;text-align:center;">${comment.cdate }</td>
+			<td style="width:100px;text-align:center;">
 			<c:if test="${comment.cwriter == sessionScope.client.id }">
-		<button type="button" class="commentUpdate">수정</button>
-		<button type="button" class="commentDelete">삭제</button>
+		<button type="button" class="commentUpdate" style="background-color:#767d83;color:#fff;border-color: #767d83;">수정</button>
+		<button type="button" class="commentDelete" style="background-color: #f0ad4e;color:#fff;border-color: #eea236;">삭제</button>
 		</c:if>
 		</td>
 		</tr>
