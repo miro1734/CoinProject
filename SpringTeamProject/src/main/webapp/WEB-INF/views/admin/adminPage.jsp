@@ -27,6 +27,7 @@
 </script>
 <body>
 	관리자 페이지
+	<a href="logout.do">로그아웃</a>
 	<div class="result">
 	<!-- 전체 회원 목록을 출력 -->
 	<c:forEach var="client" items="${requestScope.list }">

@@ -107,9 +107,11 @@ function bitChart(){ // 받아온 json 데이터로 캔들스틱 차트를 구�
 		});
 	});
 }
+
 function refresh_position_count() {
 	location.href="refreshPositionCount.do";
 }
+
 function buy_order() { // 매수 처리 기능
 		$("#btn_order_buy").hover(function(){ // 주문하기 버튼
 		$(this).css("background-color", "red").css("color", "white");
@@ -286,11 +288,12 @@ $(function(){
 		
 		$(".btn_10").click(function(){
 				coin = $("#trade_price").val();
-				if (${requestScope.now_money} < coin) {
+				if (positionMoney < coin) {
 					count = position_coin_count / 10;
 					money = (count * coin).toFixed(8);
 				} else {
 					count = Math.floor(position_coin_count / 10);
+					console.log("왜 버림이 안되냐~~" + Math.floor(position_coin_count / 10));	
 					money = Math.floor(money * coin);
 				}
 				$("#trade_qu_sell").val(count);
@@ -303,7 +306,7 @@ $(function(){
 		});
 		$(".btn_25").click(function(){
 			coin = $("#trade_price").val();
-			if (${requestScope.now_money} < coin) {
+			if (positionMoney < coin) {
 				count = position_coin_count / 4;
 				money = (count * coin).toFixed(8);
 			} else {
@@ -320,7 +323,7 @@ $(function(){
 		});
 		$(".btn_50").click(function(){
 			coin = $("#trade_price").val();
-			if (${requestScope.now_money} < coin) {
+			if (positionMoney < coin) {
 				count = position_coin_count / 2;
 				money = (count * coin).toFixed(8);
 				console.log(count);
@@ -340,7 +343,7 @@ $(function(){
 		});
 		$(".btn_100").click(function(){
 			coin = $("#trade_price").val();
-			if (${requestScope.now_money} < coin) {
+			if (positionMoney < coin) {
 				count = position_coin_count;
 				money = (count * coin).toFixed(8);
 			} else {

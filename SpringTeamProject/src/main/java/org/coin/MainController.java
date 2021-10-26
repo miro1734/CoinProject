@@ -45,8 +45,14 @@ public class MainController {
 	public String index() {
 		return "index";
 	}
+	@RequestMapping("logout.do")
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "index";
+	}
 	@RequestMapping("login.do") // 메인 페이지로 이동하면서 뉴스 게시판 내용 불러오는 부분 - 김경환
-	public String main(HttpServletRequest request, HttpSession session) {
+	public String main(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws IOException {
+		response.setContentType("text/html;charset=utf-8");
 		String id;
 		String passwd;
 		if (session.getAttribute("client") == null) {
@@ -60,6 +66,10 @@ public class MainController {
 			passwd = ((MemberDTO) session.getAttribute("client")).getPasswd();
 		}
 		MemberDTO dto = memberService.login(id, passwd);
+		if (dto == null) {
+			response.getWriter().write("<script>alert('로그인 실패');history.back();</script>");
+			return null;
+		} 
 		List<NewsDTO> news = newsService.selectAllNews();
 		request.setAttribute("list", news);
 		session.setAttribute("client", dto);

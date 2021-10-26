@@ -129,6 +129,7 @@ function onMessage(msg) {
 	str += sessionId + " : " + message;
 	str += "</div>";	
 	$(".message_window").append(str);
+	$(".message_window").scrollTop(10000);
 }
 
 function send() { // 채팅을 보내는 부분
@@ -142,10 +143,6 @@ $(function () {
 	coinList();
 	enterKey();
 	setInterval(coinList, 500);
-	setInterval(function() { // 채팅 창 스크롤이 항상 아래에 위치하게 하는 함수
-		var scroll = $(".message_window");
-		scroll.scrollTop = scroll.scrollHeight;
-	}, 0);
     $(".news_write	").click(news_write);
     $(".btn_news").click(btn_news);
     $(".news_delete").click(news_delete);
@@ -289,11 +286,13 @@ $(function () {
        }
        .message_window {
        	height: 240px;
+       	overflow: scroll;
        }
 </style>
 </head>
 <body>
 <a href="mypageView.do">마이페이지</a>
+<a href="logout.do">로그아웃</a>
 <div class="main_container">
 	<div class="sub_container">
 	    <div class="news_container">
