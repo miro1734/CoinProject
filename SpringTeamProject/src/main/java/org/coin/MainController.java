@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.websocket.server.ServerEndpoint;
 
 import org.coin.dto.BoardDTO;
 import org.coin.dto.CommentDTO;
@@ -154,7 +153,7 @@ public class MainController {
 		int currentPageNo = pageNo == null || pageNo.equals("") ? 1 : Integer.parseInt(pageNo);
 		ArrayList<BoardDTO> list = boardService.selectBoard(currentPageNo, code);
 		request.setAttribute("list", list);
-		int count = boardService.selectBoardCount();
+		int count = boardService.selectBoardCount(code);
 		PaggingVO vo = new PaggingVO(count, currentPageNo, 5, 4);
 		request.setAttribute("pagging", vo);
 		return "coin_info";
@@ -274,9 +273,7 @@ public class MainController {
 		String email = request.getParameter("email");
 
 		MemberDTO dto = new MemberDTO(id, passwd, name, email, 0);
-		System.out.println("dto는 : " + dto.toString());
 		int count = memberService.insertCoinMember(dto);
-		System.out.println(count);
 		if (count == 0) {
 			response.setContentType("text/html;charset=utf-8");
 			response.getWriter().write("<script>alert('회원가입에 실패했습니다.');history.back();</script>");
@@ -290,7 +287,6 @@ public class MainController {
 		String id = request.getParameter("id");
 		MemberDTO dto = memberService.idCheck(id);
 		JSONObject object = new JSONObject();
-		System.out.println(dto);
 		if (dto == null)
 			object.put("result", true);
 		else
@@ -319,7 +315,7 @@ public class MainController {
 	}
 
 	@RequestMapping("boardWriteView.do") // 페이지 이동 - 김예찬 10/16
-	public String boardWriteView() {
+	public String boardWriteView(HttpServletRequest request) {
 		return "board/board_write";
 	}
 
@@ -451,8 +447,8 @@ public class MainController {
 		List<Map<String, Object>> flist = memberService.selectAllFavorite(id);
 		request.setAttribute("flist", flist);
 		List<Map<String, Object>> plist = memberService.selectAllPosition(id);
+		System.out.println(plist);
 		request.setAttribute("plist", plist);
-		System.out.println("plist : " + plist.toString());
 		return "member/mypage";
 	}
 

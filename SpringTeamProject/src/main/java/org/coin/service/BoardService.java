@@ -57,8 +57,8 @@ public class BoardService {
 	public BoardDTO selectBoardContent(int bno) {
 		return mapper.selectBoardContent(bno);
 	}
-	public int selectBoardCount() {
-		return mapper.selectBoardCount();
+	public int selectBoardCount(String code) {
+		return mapper.selectBoardCount(code);
 	}
 	public void addBoardCount(int bno) {
 		mapper.addBoardCount(bno);

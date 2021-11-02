@@ -49,7 +49,6 @@ function selectAllNews(r) {
 function news_delete() {
 	$(this).parent().wrap("<form></form>");
 	var nno = $(this).parents("form").serialize();
-	console.log(nno);
 	$(this).parent().unwrap();
 	$.ajax({
 		url : "delete.do",
@@ -74,7 +73,6 @@ function btn_news() {
 		data : data,
 		dataType : "json",
 		success : function(r) {
-			console.log(r);
 			selectAllNews(r);
 		}
 	});
@@ -91,7 +89,7 @@ function coinList() {
             for (i = 0; i < 10; i++) {
                 $(".market" + i).html(d[i].market);
                 if (d[i].change == "RISE") {
-                    $(".price" + i).html(d[i].trade_price).css("color", "red");
+                    $(".price" + i).html(d[i].trade_price).css("color", "red")
                     $(".change_rate" + i).html("+" + (d[i].change_rate * 100).toFixed(2) + "%").css("color", "red");
                     $(".change_price" + i).html(d[i].change_price).css("color", "red");
                 }
@@ -111,8 +109,10 @@ var webSocket = new WebSocket("ws://localhost:9999/ws/login.do"); // 웹소켓 �
 
 function enterKey() { // 엔터키를 누르면 채팅을 전송하는 부분
 	$(".input_message").keyup(function(){
-		if (event.keyCode == 13)
-			send();
+		if (event.keyCode == 13) {
+			if ($(this).val() != "")			
+				send();
+		}
 	});
 }
 function onMessage(msg) {
@@ -133,7 +133,6 @@ function onMessage(msg) {
 }
 
 function send() { // 채팅을 보내는 부분
-	console.log(chat_id + ":" + $(".input_message").val());
 	webSocket.send(chat_id + ":" + $(".input_message").val());
 	$(".input_message").val("");
 }
@@ -146,7 +145,7 @@ $(function () {
     $(".news_write	").click(news_write);
     $(".btn_news").click(btn_news);
     $(".news_delete").click(news_delete);
-	
+    
     $(".slider").bxSlider({
         pager : false,
         mode : 'vertical',
@@ -190,35 +189,41 @@ $(function () {
 });
 </script>
 <style type="text/css">
+	@font-face {
+		font-family: 'NotoSansKR';
+		src: url("/resource/fonts/NotoSansKR-Regular.otf");
+	}
 	* {
             margin: 0;
             padding: 0;
+            font-family: NotoSansKR;
         }
 
         table {
             width: 1200px;
             text-align: center;
             border-collapse: collapse;
+            margin-top: 15px;
         }
 
         td {
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
+            border-bottom: 1px solid #e9e9e9;
             padding: 10px;
             width: 130px;
-            height: 42px;
+            height: 45px;
+            box-sizing: border-box;
         }
 
         td p {
             font-size: 10px;
         }
         .news_container2 {
-        	background-color: #e9e9e9;
+        	background-color: #f5f5f5;
         	width: 100%;
         	height: 100px;
-        	padding: 10px;
+        	padding: 15px;
         	box-sizing: border-box;
-        	border-radius: 5px;
+        	border-radius: 10px;
         }
         .bx-wrapper {
         	width: 600px;
@@ -227,33 +232,31 @@ $(function () {
             box-shadow: none;
             margin-bottom: 0;
      	}
-     	.chat_container .bx-wrapper, .chat_container .bx-viewport{
-     		height: 240px;
-     	}
      	.news_container {
      		width: 600px;
      		height: 330px;
+     		border-radius: 5px;
      	}
         .ndate {
         	color: #c9c9c9;
-        	font-size: 10px;
+        	font-size: 14px;
         }
         .heardline {
-        	font-size: 12px;
+        	font-size: 20px;
+        	margin-top: 12px;
         }
         .blank {
         	height: 10px;
         }
        .bx-wrapper .bx-controls-direction a {
-       		top : -15px;
+       		top : -20px;
        		transform:rotate(90deg);
        }
        .bx-wrapper .bx-next {
        		right: 10px;
        }
        .bx-wrapper .bx-prev {
-       		position : absolute;
-       		left : 220px;
+       		left : 500px;
        }
        form {
        		display: none;
@@ -268,15 +271,24 @@ $(function () {
        	height: 648px;
        }
        .chat_container {
-       	margin-top : 80px;
+       	margin-top : 20px;
        	box-sizing : border-box;
-       	height: 240px;
+       	height: 260px;
+       	border: 1px solid #e9e9e9;
+       	padding: 10px;
+       	border-radius: 5px;
        }
        .price_container {
-       	margin-left : 50px;
+       margin-left: 30px;
+       	border: 1px solid #e9e9e9;
+       	box-sizing: border-box;
+       	padding: 8px;
+       	height: 658px;
+       	border-radius: 5px;
        }
        fieldset {
-       	height: 100%;
+       	height: 175px;
+       	border: none;
        }
        .box_msg {
        	height: 21px;	
@@ -285,19 +297,52 @@ $(function () {
        	height: 330px;
        }
        .message_window {
-       	height: 240px;
+       	height: 100%;
        	overflow: scroll;
+       	overflow-x: hidden;
+       	border-top: 1px solid #e9e9e9;
+       }
+       .news_container {
+       	border: 1px solid #e9e9e9;
+       	padding: 8px;
+       	height: 360px;
+       }
+       h2 {
+       	margin-bottom: 2px;
+       	color: #c4c4c4;
+       }
+       .input_message {
+       	width: 100%;
+       	height: 25px;
+       	border-radius: 8px;
+       	background-color: #f5f5f5;
+       	border: none;
+       	margin-top: 5px;
+       	box-sizing: border-box;
+       	
        }
 </style>
 </head>
 <body>
-<h2>${sessionScope.client.id}님 로그인 </h2>
-<a href="mypageView.do">마이페이지</a>
-<a href="logout.do">로그아웃</a>
+<c:if test="${sessionScope.client == null }">
+		<script type="text/javascript">
+			alert("세션 만료");
+			location.href("/");
+		</script>
+</c:if>
+<header style="border-bottom:1px solid #c4c4c4;margin-bottom:40px;">
+	<div style="display:inline;">
+		<a href="login.do"><img alt="" src="resource/img/logo.png" style="width:200px;height:70px;"></a>
+	</div>
+	<div style="display:inline;float: right;margin-top:10px;margin-right:10px;">
+		<a href="mypageView.do" style="margin:0px;color: blue;">${sessionScope.client.id }</a>님이 로그인하셨습니다.<br>
+		<a href="logout.do" style="float: right;margin-right:0px;color: red;margin-top:10px;">로그아웃</a>
+	</div>
+</header>
 <div class="main_container">
 	<div class="sub_container">
 	    <div class="news_container">
-	        <h2>뉴스</h2>
+	        <h2>코인 뉴스</h2>
 	        <div class="slider">
 		        <c:forEach var="news" items="${requestScope.news}">
 			        	<div class="news_container2">
@@ -310,17 +355,23 @@ $(function () {
 		    </div>
 	    </div>
 		<div class="chat_container">
+			<h2>채팅</h2>
 			<fieldset>
 					<div class="message_window">
 					</div>
-				<br><input type="text" class="input_message">
-				<input type="submit" value="전송" id="btn_send">
+				<input type="text" class="input_message" placeholder="   메시지를 입력해주세요.">
 			</fieldset>
 		</div>
 	</div>
 	<div class="price_container">
         <h2>실시간 시세</h2>
         <table>
+        	<tr>
+        		<th>종목</th>
+        		<th>현재가</th>
+        		<th>등락률</th>
+        		<th>등락가</th>
+        	</tr>
             <tr>
                 <td><b id="KRW-BTC">비트코인</b><br>
                     <p class="market0"></p>

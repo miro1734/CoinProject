@@ -123,7 +123,9 @@ function btn_news() {
 	});
 }
 	$(function(){
-		btn_news();
+		$(".btn_news").click(function(){
+			btn_news();
+		});
 		$(".slider").bxSlider({
 	        pager : false,
 	        mode : 'vertical',

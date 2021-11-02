@@ -17,13 +17,11 @@ public class ChatHandler extends TextWebSocketHandler{
 	@Override // 커넥션이 연결 됐을 때
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		list.add(session);
-		System.out.println(session + " 클라이언트 접속");
 	}
 
 	@Override // 소켓에 메시지를 보냈을 때
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String payload = message.getPayload(); // 전송되는 데이터
-		System.out.println("payload : " + payload);
 		for(WebSocketSession wss: list) {
 			wss.sendMessage(message);
 		}
@@ -31,7 +29,6 @@ public class ChatHandler extends TextWebSocketHandler{
 
 	@Override // 커넥션이 클로즈 됐을 때
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-		System.out.println(session + " 클라이언트 접속");
 		list.remove(session);
 	}
 	

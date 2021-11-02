@@ -12,7 +12,7 @@
 		$(".commentUpdate").click(function(){
 			var cno = $(this).parent().parent().find(".cno").html();
 			var d = $(this).parent().parent().find(".ct_update").html();
-			$(this).parent().parent().find(".ct_update").html("<form action='updateCcontent.do' method='post' class='update'><input type='hidden' name='bno' value='${requestScope.board.bno}'><input type='hidden' name='cno' value='"+cno+"'></input><input type='text' name='updateCcontent' value='"+d+"'></input></form>");
+			$(this).parent().parent().find(".ct_update").html("<form action='updateCcontent.do' method='post' class='update'><input type='hidden' name='bno' value='${requestScope.board.bno}'><input type='hidden' name='cno' value='"+cno+"'></input><input type='text' style='width:590px;height:28px;border:none;font-size:12px;' name='updateCcontent' value='"+d+"'></input></form>");
 			$(this).html("수정완료");
 			$(this).off("click");
 			$(this).click(function(){
@@ -125,32 +125,40 @@
 </style>
 </head>
 <body>
-	<header>
-	<a href="/"><img alt="" src="resource/img/logo.png" style="width:200px;height:70px;"></a>
-	
+	<header style="border-bottom:1px solid #c4c4c4;margin-bottom:40px;">
+	<div style="display:inline;">
+	<a href="login.do"><img alt="" src="resource/img/logo.png" style="width:200px;height:70px;"></a>
+	</div>
+	<div style="display:inline;float: right;margin-top:10px;margin-right:10px;">
+	<a href="mypageView.do" style="margin:0px;color: blue;">${sessionScope.client.id }</a>님이 로그인하셨습니다.<br>
+	<a href="logout.do" style="float: right;margin-right:0px;color: red;margin-top:10px;">로그아웃</a>
+	</div>
 	</header>
+	<section class="board_container">
 	<table>
 		<tr style="height:50px;">
-			<td>제목 : ${requestScope.board.title}</td>
+			<td style="font-size: 16px;padding-left: 2px;font-weight: bold;">제목 : ${requestScope.board.title}</td>
 		</tr>
-		<tr style="height:20px;text-align:right;">
+		<tr style="height:20px;text-align:right;padding-right: 2px;">
 			<td>작성자 : ${requestScope.board.writer } 조회수 : ${requestScope.board.bcount } 작성일 : ${requestScope.board.bdate }</td>
 		</tr>
 		<tr style="height:300px;vertical-align:top;">
-			<td>${requestScope.board.bcontent}</td>
+			<td style="padding-left: 2px;padding-right: 2px;">${requestScope.board.bcontent}</td>
 		</tr>
 		<tr style="height:60px;">
-			<td style="text-align: center;"><a href="boardLike.do?bno=${requestScope.board.bno}" class="like"><img alt="" src="/resource/img/like.png"> ${requestScope.board.blike}</a>
-			<a href="boardHate.do?bno=${requestScope.board.bno}" class="hate"><img alt="" src="/resource/img/hate.png"> ${requestScope.board.bhate}</a></td>
+			<td style="text-align: center;">
+			<a href="boardLike.do?bno=${requestScope.board.bno}" style="color:blue;" class="like"><img alt="" src="/resource/img/like.png"> ${requestScope.board.blike}</a>
+			<a href="boardHate.do?bno=${requestScope.board.bno}" style="color:red;" class="hate"><img alt="" src="/resource/img/hate.png"> ${requestScope.board.bhate}</a>
+			</td>
 		</tr>
 		<tr>
-			<td style="font-size:0px;">
+			<td style="font-size:0px;background-color: black;">
 			<form action="insertCcontent.do" method="post">
 			<!-- 여기에 댓글 번호 -->
 			<input type="hidden" name="bno" value="${requestScope.board.bno}">
 			<input type="hidden" name="writer" value="${requestScope.board.writer}">
-			<textarea name="ccontent" placeholder="댓글을 입력해 주세요"></textarea> 
-			<button class="ccontent_register" style="box-sizing:boder-box;background-color:#c4c4c4;">등록하기</button>
+			<textarea name="ccontent" placeholder="댓글을 입력해 주세요" style="background-color: #e3f2fd"></textarea> 
+			<button class="ccontent_register" style="box-sizing:boder-box;background-color:#039be5;color:#fff;border-color: #039be5;font-weight: bold;">등록하기</button>
 			</form>
 			</td>
 		</tr>
@@ -172,24 +180,26 @@
 		</script>
 		</c:if>
 		</div>
+	</section>
 	<br>
+	<section class="comment_container">
 	<table>
 		<tr style="height:25px;">
-			<th style="width:40px;text-align:center;">번호</th>
-			<th style="padding-left:4px;">내용</th>
-			<th style="width:80px;">글쓴이</th>
-			<th style="width:100px;">날짜</th>
-			<th style="width:80px;">수정/삭제</th>
+			<th style="width:40px;text-align:center;background-color: #9e9e9e;">번호</th>
+			<th style="padding-left:4px;background-color: #9e9e9e;">내용</th>
+			<th style="width:80px;background-color: #9e9e9e;">글쓴이</th>
+			<th style="width:100px;background-color: #9e9e9e;">날짜</th>
+			<th style="width:80px;background-color: #9e9e9e;">수정/삭제</th>
 		</tr>
 			<% int cnno = 1;%>
 			<c:forEach var="comment" items="${requestScope.commentList }">
-		<tr style="height:25px;">
+		<tr style="height:25px;" class="cstyle" >
 			<td style="display:none;" class="cno">${comment.cno}</td>
-			<td style="width:40px;text-align:center;"><%=cnno++%></td>
-			<td style="padding-left:4px;" class="ct_update">${comment.ccontent}</td>
-			<td style="width:80px;text-align:center;">${comment.cwriter }</td>
-			<td style="width:100px;text-align:center;">${comment.cdate }</td>
-			<td style="width:100px;text-align:center;">
+			<td style="width:40px;text-align:center;background-color: #efefef;"><%=cnno++%></td>
+			<td style="padding-left:4px;background-color: #efefef;" class="ct_update">${comment.ccontent}</td>
+			<td style="width:80px;text-align:center;background-color: #efefef;">${comment.cwriter }</td>
+			<td style="width:100px;text-align:center;background-color: #efefef;">${comment.cdate }</td>
+			<td style="width:100px;text-align:center;background-color: #efefef;">
 			<c:if test="${comment.cwriter == sessionScope.client.id }">
 		<button type="button" class="commentUpdate" style="background-color:#767d83;color:#fff;border-color: #767d83;">수정</button>
 		<button type="button" class="commentDelete" style="background-color: #f0ad4e;color:#fff;border-color: #eea236;">삭제</button>
@@ -198,6 +208,6 @@
 		</tr>
 		</c:forEach>
 	</table>
-	
+	</section>
 </body>
 </html>

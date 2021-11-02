@@ -11,7 +11,7 @@ public interface BoardMapper {
 	ArrayList<BoardDTO> selectBoard(HashMap<String, Object> map);
 	int selectBoardNo();
 	int insertBoard(BoardDTO dto);
-	int selectBoardCount();
+	int selectBoardCount(String code);
 	void addBoardCount(int bno);
 	BoardDTO selectBoardContent(int bno);
 	int insertBoardLike(HashMap<String, Object> map);

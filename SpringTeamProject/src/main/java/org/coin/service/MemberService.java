@@ -80,7 +80,6 @@ public class MemberService {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("id", id);
 		map.put("code", code);
-		System.out.println("id : " + id + " " + "code : " + code);
 		return mapper.selectPrice(map);
 	}
 

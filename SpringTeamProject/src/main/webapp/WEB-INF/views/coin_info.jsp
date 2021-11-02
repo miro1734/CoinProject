@@ -29,34 +29,59 @@ function coinPrice() { // 코인의 현재 가격을 불러오는 부분
 		dataType : "json",
 		success : function(r) {
 			$("#trade_price").val(r[0].trade_price);
-			$(".allMoney").html(now_money + (r[0].trade_price * position_coin_count) + " KRW");
+			$(".allMoney").html(Math.floor(now_money + (r[0].trade_price * position_coin_count)) + " KRW");
+			if (r[0].change == "RISE") {
+				$(".coin_price").html(r[0].trade_price + " KRW").css("color", "red");
+				$(".coin_rate").html("+" + (r[0].change_rate * 100).toFixed(2) + "%").css("color", "red");	
+				$(".coin_change_price").html("(▲" + r[0].change_price + " )").css("color", "red");
+			} else {
+				$(".coin_price").html(r[0].trade_price + " KRW").css("color", "blue");
+				$(".coin_rate").html("-" + (r[0].change_rate * 100).toFixed(2) + "%").css("color", "blue");	
+				$(".coin_change_price").html("(▼" + r[0].change_price + " )").css("color", "blue");
+			}
+			$(".high_price").html(r[0].high_price + "&nbsp;").css("color", "red");
+			$(".low_price").html(r[0].low_price + "&nbsp;").css("color", "blue");
+			$(".close_price").html("전일가 " + r[0].prev_closing_price);
 		}
 	});
 }
 function timeControll() { // 분봉, 일봉 버튼
+	$("#5_minute").css("background-color", "#c4c4c4");
 	$("#1_minute").click(function(){
 		timeCase = "minutes/";
 		time = 1;
+		$(".btn_container").children("button").css("background-color", "#f5f5f5");
+		$(this).css("background-color", "#c4c4c4");
 	});
 	$("#5_minute").click(function(){
 		timeCase = "minutes/";
 		time = 5;
+		$(".btn_container").children("button").css("background-color", "#f5f5f5");
+		$(this).css("background-color", "#c4c4c4");
 	});
 	$("#15_minute").click(function(){
 		timeCase = "minutes/";
 		time = 15;
+		$(".btn_container").children("button").css("background-color", "#f5f5f5");
+		$(this).css("background-color", "#c4c4c4");
 	});
 	$("#1_hour").click(function(){
 		timeCase = "minutes/";
 		time = 60;
+		$(".btn_container").children("button").css("background-color", "#f5f5f5");
+		$(this).css("background-color", "#c4c4c4");
 	});
 	$("#4_hour").click(function(){
 		timeCase = "minutes/";
 		time = 240;
+		$(".btn_container").children("button").css("background-color", "#f5f5f5");
+		$(this).css("background-color", "#c4c4c4");
 	});
 	$("#1_day").click(function(){
 		timeCase = "days/";
 		time = "";
+		$(".btn_container").children("button").css("background-color", "#f5f5f5");
+		$(this).css("background-color", "#c4c4c4");
 	});
 }
 function bitChart(){ // 받아온 json 데이터로 캔들스틱 차트를 구현하는 부분
@@ -124,24 +149,22 @@ function buy_order() { // 매수 처리 기능
 		var id = "${sessionScope.client.id}";
 		var price = $("#buy_money").html();
 		var trade_price = $("#trade_price").val();
-		console.log(trade_price);
 		$.ajax({
 			url : "coinBuy.do?code="+code+"&count="+count+"&id="+id+"&price="+price + "&trade_price=" + trade_price,
 			type : "get",
 			dataType : "json",
 			success : function(r) {
 				alert(r.message);
-				$(".have_money").html(r.memberMoney);
-				location.reload();
 				refresh_position_count();
-				$(".allMoney").html(Number(r.memberMoney) + Number(r.positionMoney));
 				buy_click();
 				buy_order();
+				sell_click();
 				order_10();
 				order_25();
 				order_50();
 				order_100();
 				order_self();
+				location.reload();
 			}
 		});
 	});
@@ -150,7 +173,7 @@ function order_10() {
 	$(".btn_10").click(function(){ // 버튼 클릭시 가진 돈의 비율로 구매할 수 있는 계산기 부분
 		coin = $("#trade_price").val();
 		money = Math.floor(${requestScope.now_money} / 10);
-		if (${sessionScope.client.krw} < coin) {
+		if (${sessionScope.client.krw + requestScope.positionMoney} < coin) {
 				count = (money / coin).toFixed(8);
 		} else {
 			count = Math.floor(money / coin);
@@ -168,7 +191,7 @@ function order_25() {
 	$(".btn_25").click(function(){
 		coin = $("#trade_price").val();
 		money = ${requestScope.now_money} / 4;
-		if (${sessionScope.client.krw} < coin) {
+		if (${sessionScope.client.krw + requestScope.positionMoney} < coin) {
 				count = (money / coin).toFixed(8);
 		} else {
 			count = Math.floor(money / coin);
@@ -186,7 +209,7 @@ function order_50() {
 	$(".btn_50").click(function(){
 		coin = $("#trade_price").val();
 		money = ${requestScope.now_money} / 2;
-		if (${sessionScope.client.krw} < coin) {
+		if (${sessionScope.client.krw + requestScope.positionMoney} < coin) {
 				count = (money / coin).toFixed(8);
 		} else {
 			count = Math.floor(money / coin);
@@ -204,7 +227,7 @@ function order_100() {
 	$(".btn_100").click(function(){ 
 		coin = $("#trade_price").val();
 		money = ${requestScope.now_money};
-		if (${sessionScope.client.krw} < coin) {
+		if (${sessionScope.client.krw + requestScope.positionMoney} < coin) {
 				count = (money / coin).toFixed(8);
 		} else {
 			count = Math.floor(money / coin);
@@ -229,7 +252,7 @@ function order_self() {
 		}
 		money = ${requestScope.now_money};
 		if (money < (count * coin)) {
-			if (${sessionScope.client.krw} < coin) {
+			if (${sessionScope.client.krw + requestScope.positionMoney} < coin) {
 				count = (money / coin).toFixed(8);
 		} else {
 			count = Math.floor(money / coin);
@@ -253,14 +276,14 @@ function buy_click() {
 		$(".buy_or_sell").html("매수가능");
 		$(".count_buy_sell").html("매수 수량");
 		
-		buy_order();
 		order_10();
 		order_25();
 		order_50();
 		order_100();
 		order_self();
-		sell_click();
 		$(".have_money").html(${requestScope.now_money} + " KRW");
+		sell_click();
+		buy_order();
 	});
 }
 function sell_click() {
@@ -270,7 +293,6 @@ function sell_click() {
 		$(this).css("background-color", "blue").css("color", "white");
 		$("#btn_buy").css("background-color", "#e9e9e9").css("color", "black");
 		$(".buy_or_sell").html("매도가능");
-		console.log(position_coin_count);
 		$(".have_money").html(Math.floor((Number($("#trade_price").val() * position_coin_count))) + " KRW");
 		$(".count_buy_sell").html("매도 수량");
 		
@@ -286,10 +308,6 @@ function sell_click() {
 				$("#trade_qu_sell").val(count);
 				$("#buy_count").html(count);
 				$("#buy_money").html(Math.floor(count * coin));
-				if ($("#buy_money").html() > money) { // 단가가 비싼 코인 소수점 구매시 보유금액을 초과하지 않게 처리하는 부분
-					$("#buy_money").html(money);
-					$("#buy_count").html($("#trade_qu_sell").val());
-				}
 		});
 		$(".btn_25").click(function(){
 			coin = $("#trade_price").val();
@@ -303,19 +321,12 @@ function sell_click() {
 			$("#trade_qu_sell").val(count);
 			$("#buy_count").html(count);
 			$("#buy_money").html(Math.floor(count * coin));
-			if ($("#buy_money").html() > money) { // 단가가 비싼 코인 소수점 구매시 보유금액을 초과하지 않게 처리하는 부분
-				$("#buy_money").html(money);
-				$("#buy_count").html($("#trade_qu_sell").val());
-			}
 		});
 		$(".btn_50").click(function(){
 			coin = $("#trade_price").val();
 			if (positionMoney < coin) {
 				count = position_coin_count / 2;
 				money = (count * coin).toFixed(8);
-				console.log(count);
-				console.log(money);
-				console.log(count*coin);
 			} else {
 				count = Math.floor(position_coin_count / 2);
 				money = Math.floor(money * coin);
@@ -323,10 +334,6 @@ function sell_click() {
 			$("#trade_qu_sell").val(count);
 			$("#buy_count").html(count);
 			$("#buy_money").html(Math.floor(count * coin));
-			if ($("#buy_money").html() > money) { // 단가가 비싼 코인 소수점 구매시 보유금액을 초과하지 않게 처리하는 부분
-				$("#buy_money").html(money);
-				$("#buy_count").html($("#trade_qu_sell").val());
-			}
 		});
 		$(".btn_100").click(function(){
 			coin = $("#trade_price").val();
@@ -340,10 +347,6 @@ function sell_click() {
 			$("#trade_qu_sell").val(count);
 			$("#buy_count").html(count);
 			$("#buy_money").html(Math.floor(count * coin));
-			if ($("#buy_money").html() > money) { // 단가가 비싼 코인 소수점 구매시 보유금액을 초과하지 않게 처리하는 부분
-				$("#buy_money").html(money);
-				$("#buy_count").html($("#trade_qu_sell").val());
-			}
 		});
 		$("#trade_qu_sell").change(function(){ // 구매할 수량 직접 입력시 처리하는 부분
 			coin = $("#trade_price").val();
@@ -382,10 +385,7 @@ function sell_click() {
 				dataType : "json",
 				success : function(r) {
 					alert(r.message);
-					$(".have_money").html(r.money);
-					location.reload();
 					refresh_position_count();
-					$(".allMoney").html(Number(r.memberMoney) + Number(r.positionMoney));
 					buy_click();
 					buy_order();
 					order_10();
@@ -393,6 +393,10 @@ function sell_click() {
 					order_50();
 					order_100();
 					order_self();
+					sell_click();
+					$(".allMoney").html(Number(r.memberMoney) + Number(r.positionMoney));
+					$(".have_money").html(r.money);
+					location.reload();
 				}
 			});
 		});
@@ -420,7 +424,6 @@ function insertFavoriteCoin() {
 			url : "insertFavoriteCoin.do",
 			dataType: "json",
 			success : function(r) {
-				console.log(r.favoriteCoins);
 				if(r.favoriteCoins != null) {
 					$(".favorite_container").html(r.html);
 				}
@@ -436,7 +439,6 @@ function deleteFavoriteCoin() {
 			url : "deleteFavoriteCoin.do",
 			dataType: "json",
 			success : function(r) {
-				console.log(r.favoriteCoins);
 				if(r.favoriteCoins != null) {
 					$(".favorite_container").html(r.html);
 				}
@@ -463,18 +465,36 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 	* {
 		margin: 0;
 		padding: 0;
-		text-decoration:none;
 	}
 	.btn_container {
-		display: flex;
+		height: 100%;
+		box-sizing: border-box;
+		position: absolute;
+		z-index: 100;
+		left: 50px;
+		margin-top: 20px;
+	}
+	.btn_container button {
+		width: 100px;
+		height: 30px;
+		box-sizing: border-box;
+		border: none;
+		background-color: #f5f5f5;
+		border-radius: 5px;
+	}
+	#5_minute {
+		background-color: #c4c4c4;
 	}
 	#chart_container {
 		max-width: 1400px;
+		border: 1px solid #e9e9e9;
+		border-radius: 10px;
 	}
 	.trade_view {
 		width : 400px;
 		height : 500px;
 		text-align: center;
+		margin-right: 10px;
 	}
 	#btn_buy, #btn_sell {
 		width: 50%;
@@ -485,14 +505,19 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 	#btn_buy {
 		background-color: red;
 		color: white;
+		border-top-left-radius: 10px;
+		border-bottom-left-radius: 10px;
 	}
 	#btn_sell {
 		background-color: #e9e9e9;
 		color: black;
+		border-top-right-radius: 10px;
+		border-bottom-right-radius: 10px;
 	}
 	.main_container {
 		display: flex;
 		justify-content: space-around;
+		margin-bottom: 20px;
 	}
 	.have_krw {
 		display : flex;
@@ -576,8 +601,36 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 	#order_qu {
 		text-align: left;
 	}
+	.info_container {
+		border: 1px solid #e9e9e9;
+		width: 71.1%;
+		padding: 15px;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		margin: 10px;
+		margin-left: 43px;
+		border-radius: 10px;
+	}
+	.icon_star, .icon_check_star {
+		width: 30px;
+	}
+	.favorite_container {
+		position: relative;
+		height: 30px;
+		margin-top: 7px;
+		margin-left: 5px;
+	}
+	.coin_rate {
+		margin-top: 10px;
+		margin-left: 5px;
+	}
+	.coin_change_price {
+		margin-top: 10px;
+		margin-left: 5px;
+	}
 /* 예찬님 css ----------------------------------------------------------------------------------- */
-	table{
+table{
 		border-collapse: collapse;
 		margin:0 auto;
 	}
@@ -586,12 +639,87 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 		text-align: center;
 		font-size: 1.3rem;
 	}
+	.board_container:hover{
+		background-color: #bdbdbd;
+	}
 </style>
 </head>
 <body>
-<a href="memberUpdateView.do">${sessionScope.client.id }</a>님이 로그인하셨습니다.<br>
-	<a href="logout.do">로그아웃</a>
+<c:if test="${sessionScope.client == null }">
+		<script type="text/javascript">
+			alert("세션 만료");
+			location.href("/");
+		</script>
+</c:if>
+<header style="border-bottom:1px solid #c4c4c4;margin-bottom:40px;">
+	<div style="display:inline;">
+		<a href="login.do"><img alt="" src="resource/img/logo.png" style="width:200px;height:70px;"></a>
+	</div>
+	<div style="display:inline;float: right;margin-top:10px;margin-right:10px;">
+		<a href="mypageView.do" style="margin:0px;color: blue;">${sessionScope.client.id }</a>님이 로그인하셨습니다.<br>
+		<a href="logout.do" style="float: right;margin-right:0px;color: red;margin-top:10px;">로그아웃</a>
+	</div>
+</header>
+	<div class="info_container">
+		<div style="display: flex; flex-direction: row">
+			<c:choose>
+				<c:when test="${requestScope.code == 'KRW-BTC'}">
+					<h1 class="coin_name">비트코인</h1>
+				</c:when>
+				<c:when test="${requestScope.code == 'KRW-XRP'}">
+					<h1 class="coin_name">리플</h1>
+				</c:when>
+				<c:when test="${requestScope.code == 'KRW-OMG'}">
+					<h1 class="coin_name">오미세고</h1>
+				</c:when>
+				<c:when test="${requestScope.code == 'KRW-ETH'}">
+					<h1 class="coin_name">이더리움</h1>
+				</c:when>
+				<c:when test="${requestScope.code == 'KRW-ELF'}">
+					<h1 class="coin_name">엘프</h1>
+				</c:when>
+				<c:when test="${requestScope.code == 'KRW-DOGE'}">
+					<h1 class="coin_name">도지코인</h1>
+				</c:when>
+				<c:when test="${requestScope.code == 'KRW-EOS'}">
+					<h1 class="coin_name">이오스</h1>
+				</c:when>
+				<c:when test="${requestScope.code == 'KRW-XLM'}">
+					<h1 class="coin_name">스텔라루멘</h1>
+				</c:when>
+				<c:when test="${requestScope.code == 'KRW-MATIC'}">
+					<h1 class="coin_name">폴리곤</h1>
+				</c:when>
+				<c:when test="${requestScope.code == 'KRW-TRX'}">
+					<h1 class="coin_name">트론</h1>
+				</c:when>
+			</c:choose>
+			<div class="favorite_container">
+				<img src="/resource/img/star.png" class="icon_star">
+			</div>
+		</div>
+			<div style="display: flex; flex-direction: row">
+				<h1 class="coin_price"></h1>
+				<span class="coin_rate"></span>
+				<span class="coin_change_price"></span>
+			</div>
+			<div style="display: flex; flex-direction: row;">
+				<span>고가&nbsp;</span>
+				<span class="high_price"></span>
+				<span>저가&nbsp;</span>
+				<span class="low_price"></span>
+				<span class="close_price"></span>
+			</div>
+	</div>
 	<div class="main_container">
+		<div class="btn_container">
+			<button type="button" id="1_minute">1분</button>
+			<button type="button" id="5_minute">5분</button>
+			<button type="button" id="15_minute">15분</button>
+			<button type="button" id="1_hour">1시간</button>
+			<button type="button" id="4_hour">4시간</button>
+			<button type="button" id="1_day">1일</button>
+		</div>
 		<div id="chart_container"></div>
 		<div class="trade_view">
 			<button type="button" id="btn_buy">매수</button><button type="button" id="btn_sell">매도</button>
@@ -603,11 +731,11 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 			</div>
 			<p id="price">가격</p>
 			<div class="trade_container_price">
-			<input type="text" id="trade_price">
+			<input type="text" id="trade_price" readonly="readonly">
 			</div>
 			<p id="price">수량</p>
 			<div class="trade_container">
-				<input type="number" id="trade_qu_buy" min="0"><button type="button" id="plus2">+</button><button type="button" id="minus2">-</button>
+				<input type="number" id="trade_qu_buy" min="0">
 			</div>
 			<div class="qu_container">
 				<button type="button" class="btn_10">10%</button>
@@ -626,50 +754,36 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 			</div>
 		</div>
 	</div>
-		<div class="btn_container">
-			<button type="button" id="1_minute">1분</button>
-			<button type="button" id="5_minute">5분</button>
-			<button type="button" id="15_minute">15분</button>
-			<button type="button" id="1_hour">1시간</button>
-			<button type="button" id="4_hour">4시간</button>
-			<button type="button" id="1_day">1일</button>
-		</div>
-		<div class="favorite_container">
-			<img src="/resource/img/star.png" class="icon_star">
-		</div>
 <!-- ---------------------예찬님 body ------------------------------------------------------------------ -->
 	
 	<hr>
-	<input type="hidden" value="${d = requestScope.list.size() }">
+	
 	<table>
 	
-	<tr>
-		<th>번호</th>
-		<th>제목</th>
-		<th>글쓴이</th>
+	<tr style="border-bottom:1px solid #c4c4c4;background-color: #e0e0e0;">
+		<th style="width:200px;">제목</th>
+		<th style="width:100px;">글쓴이</th>
 		<th>날짜</th>
 		<th>조회수</th>
-		<th>좋아요</th>
-		<th>싫어요</th>
+		<th style="color:blue;">좋아요</th>
+		<th style="color:red;">싫어요</th>
 	</tr>
 	
 		
 	<c:forEach var="board" items="${requestScope.list }" >
-	<tr> 
-		<td>${d }</td>
+	<tr class="board_container"> 
 		<td style="display:none;">${board.bno }</td>
-		<td><a href="boardView.do?bno=${board.bno }">${board.title }</a></td>
+		<td><a href="boardView.do?bno=${board.bno }" style="color:black;">${board.title }</a></td>
 		<td>${board.writer }</td>
 		<td>${board.bdate }</td>
 		<td>${board.bcount }</td>
-		<td>${board.blike }</td>
-		<td>${board.bhate }</td>
-		<td style="display:none;">${d = d-1 }</td>
+		<td style="color: blue;">${board.blike }</td>
+		<td style="color:red;">${board.bhate }</td>
 	</tr>
 	</c:forEach>
 	<!-- 페이징 처리 -->
 	<tr>
-		<td colspan="7">
+		<td colspan="7" style="background-color: #e0e0e0;">
 			<c:if test="${requestScope.pagging.priviousPageGroup }">
 				<a href="coinInfo.do?pageNo=${requestScope.pagging.startPageOfPageGroup-1}&code=${requestScope.code}"><<</a>			
 			</c:if>			
@@ -679,7 +793,7 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 						${i }
 					</c:when>
 					<c:otherwise>
-						<a href="coinInfo.do?pageNo=${i}&code=${requestScope.code}">${i }</a>
+						<a href="coinInfo.do?pageNo=${i}&code=${requestScope.code}" style="color: blue;">${i }</a>
 					</c:otherwise>
 				</c:choose>
 			</c:forEach>
@@ -689,8 +803,8 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 		</td>
 	</tr>
 	<tr>
-		<td colspan="7">
-			<a href="boardWriteView.do">글쓰기</a>
+		<td colspan="6" style="background-color: #9e9e9e;">
+			<a href="boardWriteView.do" style="color:#fff;">글쓰기</a>
 		</td>
 	</tr>
 	</table>
