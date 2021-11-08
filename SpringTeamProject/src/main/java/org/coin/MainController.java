@@ -21,7 +21,6 @@ import org.coin.service.NewsService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -217,7 +216,7 @@ public class MainController {
 			throws IOException {
 		response.setContentType("text/html;charset=utf-8");
 		String id = ((MemberDTO) session.getAttribute("client")).getId();
-		int result = memberService.updatePositionCount(id);
+		memberService.updatePositionCount(id);
 		response.getWriter().write("<script>history.back();</script>");
 		return null;
 	}
@@ -319,12 +318,21 @@ public class MainController {
 		return "board/board_write";
 	}
 
-	@RequestMapping("boardWrite.do") // 게시판 글 작성 - 김예찬 10/18
-	public String boardwrite(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	@RequestMapping("boardWrite.do") // 게시판 글 작성 - 김예찬 11/04
+	public String boardwrite(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
 		String title = request.getParameter("title");
 		String bcontent = request.getParameter("bcontent");
 		String writer = ((MemberDTO) session.getAttribute("client")).getId();
 		String code = (String) session.getAttribute("code");
+		if (title.equals("") || bcontent.equals("")) {
+			response.setContentType("text/html;charset=utf-8");
+			response.getWriter().write("<script>alert('반드시 내용을 입력해주세요.');history.back();</script>");
+			return null;
+		}else if(title.length() > 20 || bcontent.length() >300){
+			response.setContentType("text/html;charset=utf-8");
+			response.getWriter().write("<script>alert('입력 가능한 글자수를 초과하였습니다.');history.back();</script>");
+			return null;
+		}
 		int bno = boardService.insertBoard(new BoardDTO(0, title, writer, null, bcontent, 0, 0, 0, code));
 		return "redirect:coinInfo.do?code=" + code;
 	}
@@ -370,23 +378,40 @@ public class MainController {
 		return "redirect:coinInfo.do?code=" + code;
 	}
 
-	@RequestMapping("insertCcontent.do") // 댓글 작성 - 김예찬 10/18
-	public String ccontentwrite(HttpServletRequest request, HttpSession session) {
+	@RequestMapping("insertCcontent.do") // 댓글 작성 - 김예찬 11/05
+	public String ccontentwrite(HttpServletRequest request,HttpServletResponse response , HttpSession session) throws IOException {
 		String ccontent = request.getParameter("ccontent");
 		String cwriter = ((MemberDTO) session.getAttribute("client")).getId();
 		int bno = Integer.parseInt(request.getParameter("bno"));
-
+		if (ccontent.equals("")) {
+			response.setContentType("text/html;charset=utf-8");
+			response.getWriter().write("<script>alert('댓글을 입력해주세요.');history.back();</script>");
+			return null;
+		}else if (ccontent.length() > 150) {
+			response.setContentType("text/html;charset=utf-8");
+			response.getWriter().write("<script>alert('150자이상 입력 할 수 없습니다.');history.back();</script>");
+			return null;
+		}
+		
 		int cno = commentService.insertCcontent(new CommentDTO(0, ccontent, null, bno, cwriter));
 		return "redirect:boardView.do?bno=" + bno;
 	}
 
-	@RequestMapping("updateCcontent.do") // 댓글 수정 - 김예찬 10/19
-	public String updatecComment(HttpServletRequest request, RedirectAttributes redirectAttributes,
-			HttpSession session) {
+	@RequestMapping("updateCcontent.do") // 댓글 수정 - 김예찬 11/05
+	public String updatecComment(HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes,
+			HttpSession session) throws IOException {
 		String ccontent = request.getParameter("updateCcontent");
 		int bno = Integer.parseInt(request.getParameter("bno"));
 		int cno = Integer.parseInt(request.getParameter("cno"));
-
+		if (ccontent.equals("")) {
+			response.setContentType("text/html;charset=utf-8");
+			response.getWriter().write("<script>alert('댓글을 입력해주세요.');history.back();</script>");
+			return null;
+		}else if (ccontent.length() > 150) {
+			response.setContentType("text/html;charset=utf-8");
+			response.getWriter().write("<script>alert('150자이상 입력 할 수 없습니다.');history.back();</script>");
+			return null;
+		}
 		commentService.updateComment(cno, ccontent);
 		redirectAttributes.addAttribute("bno", bno);
 		return "redirect:boardView.do";
@@ -447,7 +472,6 @@ public class MainController {
 		List<Map<String, Object>> flist = memberService.selectAllFavorite(id);
 		request.setAttribute("flist", flist);
 		List<Map<String, Object>> plist = memberService.selectAllPosition(id);
-		System.out.println(plist);
 		request.setAttribute("plist", plist);
 		return "member/mypage";
 	}
@@ -467,4 +491,26 @@ public class MainController {
 		response.getWriter().write(arr.toString());
 		return null;
 	}
+	
+	@RequestMapping("login_kakao.do") // 카카오 로그인(), 상표 이미지 누르면  메인 페이지로 이동  - 조광일 11/02
+	public String main_kakao(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws IOException {
+		response.setContentType("text/html;charset=utf-8");
+		return "main";
+	}
+	
+	@RequestMapping("main.do") //카카오 로그인 11/08
+    public String kakaologin(HttpServletRequest request,HttpSession session, HttpServletResponse response) throws IOException {
+    	String id = request.getParameter("id");
+    	String passwd = "0000";
+		String name = "0000";
+		String email = "0000";
+		MemberDTO dto = new MemberDTO(id, passwd, name, email, 0);
+		MemberDTO dto2 = memberService.selectMember(id);
+		session.setAttribute("client", dto);
+		if(dto2 == null) {
+		memberService.insertCoinMember(dto);
+		session.setAttribute("client", dto);
+		}
+    	return "main";
+    }
 }

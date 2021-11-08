@@ -12,7 +12,7 @@
 		$(".commentUpdate").click(function(){
 			var cno = $(this).parent().parent().find(".cno").html();
 			var d = $(this).parent().parent().find(".ct_update").html();
-			$(this).parent().parent().find(".ct_update").html("<form action='updateCcontent.do' method='post' class='update'><input type='hidden' name='bno' value='${requestScope.board.bno}'><input type='hidden' name='cno' value='"+cno+"'></input><input type='text' style='width:590px;height:28px;border:none;font-size:12px;' name='updateCcontent' value='"+d+"'></input></form>");
+			$(this).parent().parent().find(".ct_update").html("<form action='updateCcontent.do' method='post' class='update'><input type='hidden' name='bno' value='${requestScope.board.bno}'/><input type='hidden' name='cno' value='"+cno+"'/><input type='text' style='width:590px;height:28px;border:none;font-size:12px;background-color:#c8c8c8;' name='updateCcontent' value='"+d+"'/></form>");
 			$(this).html("수정완료");
 			$(this).off("click");
 			$(this).click(function(){
@@ -67,7 +67,7 @@
 </script>
 <style type="text/css">
 	*{
-		margin: auto;
+		margin:0 auto;
 		padding: 0px;
 	}
 	table{
@@ -127,7 +127,7 @@
 <body>
 	<header style="border-bottom:1px solid #c4c4c4;margin-bottom:40px;">
 	<div style="display:inline;">
-	<a href="login.do"><img alt="" src="resource/img/logo.png" style="width:200px;height:70px;"></a>
+	<a href="login.do" style="margin:0px;"><img alt="" src="resource/img/logo.png" style="width:200px;height:70px;"></a>
 	</div>
 	<div style="display:inline;float: right;margin-top:10px;margin-right:10px;">
 	<a href="mypageView.do" style="margin:0px;color: blue;">${sessionScope.client.id }</a>님이 로그인하셨습니다.<br>

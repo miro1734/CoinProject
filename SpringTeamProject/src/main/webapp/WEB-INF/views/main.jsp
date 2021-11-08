@@ -104,7 +104,7 @@ function coinList() {
 }
 
 // 실시간 채팅 처리 부분
-var chat_id = "${sessionScope.client.name}";	
+var chat_id = "${sessionScope.client.id}";	
 var webSocket = new WebSocket("ws://localhost:9999/ws/login.do"); // 웹소켓 핸드쉐이크 연결
 
 function enterKey() { // 엔터키를 누르면 채팅을 전송하는 부분
@@ -197,6 +197,7 @@ $(function () {
             margin: 0;
             padding: 0;
             font-family: NotoSansKR;
+            text-decoration: none;
         }
 
         table {
@@ -327,7 +328,7 @@ $(function () {
 <c:if test="${sessionScope.client == null }">
 		<script type="text/javascript">
 			alert("세션 만료");
-			location.href("/");
+			location.href="/";
 		</script>
 </c:if>
 <header style="border-bottom:1px solid #c4c4c4;margin-bottom:40px;">

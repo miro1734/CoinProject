@@ -44,7 +44,7 @@
 		select count from positioned_coin where id = #{id} and code = #{code}
 	</select>
 	<update id="updatePositionCount" parameterType="String">
-		update positioned_coin set price = 0 where count = 0
+		update positioned_coin set price = 0, trade_price = 0 where count = 0
 	</update>
 	<insert id="insertFavoriteCoin" parameterType="map">
 		insert into favorite_coin values (favorite_no_seq.nextval, #{code}, #{id})

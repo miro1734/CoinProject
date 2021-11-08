@@ -30,54 +30,63 @@
     label{
         width: 117px;
         height: 76px;
-        font-size: 30px;
+        font-size: 20px;
         margin-bottom: 10px;
-        margin-left: 100px;
+        margin-left: 110px;
     }
     input{
+    	outline: none;
         height: 76px;
         width: 492px;
         margin-bottom: 10px;
         font-size: 20px;
     }
+    input:focus{
+    	border-bottom: 1px solid #337ab7;
+    }
     #id{
-        padding-right: 30px;
+        padding-right: 40px;
+    }
+    #passwd{
+    	padding-right: 20px;
     }
     #name{
         padding-right: 60px;
     }
     #email{
-        padding-right: 30px;  
+        padding-right: 40px;  
     }
     .id{
         border: none;
+        border-radius: 10px;
+    }
+    .id:focus{
+    	border-bottom:none;
     }
     .pass{
-        background-color: #c4c4c4;
-        border-radius: 10px;
         border: none;
+        border-bottom: 1px solid #e4e4e4;
     }
     .name{
-        background-color: #c4c4c4;
-        border-radius: 10px;
         border: none;
+        border-bottom: 1px solid #e4e4e4;
     }
     .email{
-        background-color: #c4c4c4;
-        border-radius: 10px;
         border: none;
+        border-bottom: 1px solid #e4e4e4;
     }
     button{
         width: 250px;
         height: 60px;
         border-radius: 5px;
-        margin-top: 30px;
+        margin-top: 80px;
         margin-left: 115px;
-        background-color: #767d83;
+        background-color: #337ab7;
         font-size: 20px;
+        color: white;
     }
     button:hover{
-        background-color: #626669;
+        background-color: #23527c;
     }
     #passResult{
     	font-size: 15px;

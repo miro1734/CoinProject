@@ -27,8 +27,13 @@ function positionCoin() {
         		console.log("현재가 : " + d[i].trade_price);
         		console.log("평단가 : " + mp);
         		var result = ((d[i].trade_price - mp) / mp * 100).toFixed(2);
-        		console.log(result);
-        		$("tbody").children("tr").eq(i + 1).children("td").eq(1).html(result);
+        		if (d[i].trade_price > mp) {
+	        		$(".position_table").children().children("tr").eq(i + 1).children("td").eq(1).html("+" + result + "%")
+	        		.css("color", "red");
+        		} else {
+        			$(".position_table").children().children("tr").eq(i + 1).children("td").eq(1).html(" - " + result + "%")
+	        		.css("color", "blue");
+        		}
         	}
         }
 	});
@@ -105,7 +110,7 @@ function favorite_delete() {
 			dataType:"json",
 			type:"get",
 			success:function(r){
-				selectAllFavorite(r);				
+				location.reload();
 			}
 		});
 	});
@@ -183,15 +188,16 @@ function favorite_delete() {
 			</c:if>
 		</c:forEach>
 	</div>
-	<div class="member">
-		<p>${sessionScope.client.id}</p>
-		<p>${sessionScope.client.name}</p>
-		<p>${sessionScope.client.email}</p>
-		<p>${sessionScope.client.krw}</p>
-		<a href="memberUpdateView.do"><button>수정하기</button></a>
+	<header style="border-bottom:1px solid #c4c4c4;margin-bottom:40px;">
+	<div style="display:inline;">
+		<a href="login.do"><img alt="" src="resource/img/logo.png" style="width:200px;height:70px;"></a>
 	</div>
+	<div style="display:inline;float: right;margin-top:10px;margin-right:10px;">
+		<a href="mypageView.do" style="margin:0px;color: blue;">${sessionScope.client.id }</a>님이 로그인하셨습니다.<br>
+		<a href="logout.do" style="float: right;margin-right:0px;color: red;margin-top:10px;">로그아웃</a>
+	</div>
+</header>
 	<div class="my_list">
-	
 	<div class="favorite_list">
         <h2>관심 코인</h2>
 			<table>
@@ -264,7 +270,7 @@ function favorite_delete() {
     </div>
 	<div class="position_list">
 		<h2>보유코인</h2>
-			<table>
+			<table class="position_table">
 				<tr>
 					<th>자산</th>
 					<th>수익률</th>

@@ -155,7 +155,6 @@ function buy_order() { // 매수 처리 기능
 			dataType : "json",
 			success : function(r) {
 				alert(r.message);
-				refresh_position_count();
 				buy_click();
 				buy_order();
 				sell_click();
@@ -164,6 +163,7 @@ function buy_order() { // 매수 처리 기능
 				order_50();
 				order_100();
 				order_self();
+				refresh_position_count();
 				location.reload();
 			}
 		});
@@ -269,7 +269,7 @@ function order_self() {
 function buy_click() {
 	$("#btn_buy").click(function(){
 		$(".order_container").html("<button id='btn_order_buy'>주문하기</button>");
-		$(".trade_container").html("<input type='number' id='trade_qu_buy' min='0'><button type='button' id='plus2'>+</button><button type='button' id='minus2'>-</button>");
+		$(".trade_container").html("<input type='number' id='trade_qu_buy' min='0'>");
 		$(this).css("background-color", "red").css("color", "white");
 		$("#btn_sell").css("background-color", "#e9e9e9").css("color", "black");
 		$(".have_money").html(${sessionScope.client.krw}+ " KRW");
@@ -289,7 +289,7 @@ function buy_click() {
 function sell_click() {
 	$("#btn_sell").click(function(){
 		$(".order_container").html("<button id='btn_order_sell'>주문하기</button>");
-		$(".trade_container").html("<input type='number' id='trade_qu_sell' min='0'><button type='button' id='plus2'>+</button><button type='button' id='minus2'>-</button>");
+		$(".trade_container").html("<input type='number' id='trade_qu_sell' min='0'>");
 		$(this).css("background-color", "blue").css("color", "white");
 		$("#btn_buy").css("background-color", "#e9e9e9").css("color", "black");
 		$(".buy_or_sell").html("매도가능");
@@ -385,7 +385,6 @@ function sell_click() {
 				dataType : "json",
 				success : function(r) {
 					alert(r.message);
-					refresh_position_count();
 					buy_click();
 					buy_order();
 					order_10();
@@ -396,6 +395,7 @@ function sell_click() {
 					sell_click();
 					$(".allMoney").html(Number(r.memberMoney) + Number(r.positionMoney));
 					$(".have_money").html(r.money);
+					refresh_position_count();
 					location.reload();
 				}
 			});
@@ -467,7 +467,7 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 		padding: 0;
 	}
 	.btn_container {
-		height: 100%;
+		height: 80px;
 		box-sizing: border-box;
 		position: absolute;
 		z-index: 100;
@@ -552,12 +552,6 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 		text-align: right;
 		padding-right: 10px;
 	}
-	#plus1, #plus2, #minus1, #minus2 {
-		width: 10%;
-		height: 100%;
-		border: none;
-		border-left: 1px solid #c4c4c4;
-	}
 	.trade_container, .trade_container_price {
 		border: 1px solid #c4c4c4;
 		height: 50px;
@@ -614,6 +608,7 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 	}
 	.icon_star, .icon_check_star {
 		width: 30px;
+		text-decoration: none;
 	}
 	.favorite_container {
 		position: relative;
@@ -773,7 +768,7 @@ table{
 	<c:forEach var="board" items="${requestScope.list }" >
 	<tr class="board_container"> 
 		<td style="display:none;">${board.bno }</td>
-		<td><a href="boardView.do?bno=${board.bno }" style="color:black;">${board.title }</a></td>
+		<td style="width:200px;"><a href="boardView.do?bno=${board.bno }" style="display:block;color:black;width:200px;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${board.title }</a></td>
 		<td>${board.writer }</td>
 		<td>${board.bdate }</td>
 		<td>${board.bcount }</td>
@@ -783,6 +778,7 @@ table{
 	</c:forEach>
 	<!-- 페이징 처리 -->
 	<tr>
+		<c:if test="${requestScope.list.size() != 0}">
 		<td colspan="7" style="background-color: #e0e0e0;">
 			<c:if test="${requestScope.pagging.priviousPageGroup }">
 				<a href="coinInfo.do?pageNo=${requestScope.pagging.startPageOfPageGroup-1}&code=${requestScope.code}"><<</a>			
@@ -801,6 +797,7 @@ table{
 				<a href="coinInfo.do?pageNo=${requestScope.pagging.endPageOfPageGroup+1 }&code=${requestScope.code}">>></a>			
 			</c:if>			
 		</td>
+		</c:if>
 	</tr>
 	<tr>
 		<td colspan="6" style="background-color: #9e9e9e;">
