@@ -14,9 +14,10 @@
         }
         .result{
             margin: 0 auto;
-            width: 898px;
+            width: 880px;
             height: 1024px;
             box-sizing: border-box;
+            border: 1px solid #e9e9e9;
         }
         h2{
             font-weight: bold;
@@ -31,7 +32,7 @@
             height: 76px;
             font-size: 20px;
             margin-bottom: 10px;
-            margin-left: 110px;
+            margin-left: 130px;
         }
         input{
         	outline: none;
@@ -60,8 +61,8 @@
         .id_result{
             height: 76px;
             width: 492px;
-            font-size: 20px;
-            margin-left: 230px;
+            font-size: 15px;
+            margin-left: 250px;
         }
         .agreement_1 label{
             font-size: 20px;
@@ -73,7 +74,7 @@
             width: 15px;
             height: 15px;
             margin-top: 30px;
-            margin-left: 230px;    
+            margin-left: 250px;    
         }
         .agreement_2 label{
             font-size: 20px;
@@ -85,7 +86,7 @@
             width: 15px;
             height: 15px;
             margin-top: 10px;
-            margin-left: 230px;    
+            margin-left: 250px;    
         }
         .agreement_3 label{
             font-size: 20px;
@@ -97,7 +98,7 @@
             width: 15px;
             height: 15px;
             margin-top: 10px;
-            margin-left: 230px;   
+            margin-left: 250px;   
         }
         .agreement_4 label{
             font-size: 20px;
@@ -109,12 +110,12 @@
             width: 15px;
             height: 15px;
             margin-top: 10px;
-            margin-left: 230px;    
+            margin-left: 250px;    
         }
         button{
             width: 503px;
             height: 81px;
-            margin-left: 220px;
+            margin-left: 240px;
             margin-bottom: 20px;
             border-radius: 10px;
             background-color: #337ab7;
@@ -132,10 +133,11 @@
             color: white;
         }
         .join_button{
-            margin-top: 30px;
+            margin-top: 50px;
         }
         #passResult{
             font-size: 15px;
+            margin-left: 250px;
         }
 </style>
 <script src="/resource/lib/jquery-3.6.0.min.js"></script>
@@ -151,7 +153,7 @@ $(function() {
 			dataType:"json",
 			success:function(r){
 				status = r.result;
-				if(status=="true")
+				if(status=="true")				
 					$(".id_result").html("아이디가 중복되지 않았습니다.");
 				else
 					$(".id_result").html("아이디가 중복됩니다.");
@@ -165,7 +167,6 @@ $(function() {
 		}
 	});
 });
-
 $(document).ready(function(){
 	$('#chk1').click(function () {
 		if($("#chk1").prop("checked")){
@@ -181,11 +182,10 @@ $(function(){
 		$('#passResult').html('');
 	});
 	$('#pass2').keyup(function(){
-		
 		if($('#pass').val() != $('#pass2').val()){
 	        $('#passResult').html('비밀번호 일치하지 않음');
 	        $('#passResult').attr('color', '#f82a2aa3');
-	    }else{
+		}else{
 	        $('#passResult').html('비밀번호 일치함');
 	        $('#passResult').attr('color', '#199894b3');
 	    }
@@ -204,7 +204,6 @@ $(function() {
 	        e.preventDefault();
 	        return;
 	    }
-	 
 	    if (registration.pass.value == "") {
 	        alert("비밀번호를 확인해 주세요.");
 	        registration.pass.focus();
@@ -223,6 +222,22 @@ $(function() {
 	        e.preventDefault();
 	        return;
 	    }
+	    if(!chk2.checked){
+	    	alert("약관 동의를 체크하세요.");
+	    	chk2.focus();
+	    	e.preventDefault();
+	        return;
+	    }if(!chk3.checked){
+	    	alert("약관 동의를 체크하세요.");
+	    	chk3.focus();
+	    	e.preventDefault();
+	        return;
+	    }if(!chk4.checked){
+	    	alert("약관 동의를 체크하세요.");
+	    	chk4.focus();
+	    	e.preventDefault();
+	        return;
+	    }
 	    registration.submit();
 	});
 })
@@ -235,10 +250,7 @@ $(function(){
 </head>
 <body>
 	<div class="result">
-	    	<h2>
-	            다나와 코인<br>
-	            회원가입
-	        </h2>
+	    	<h2>다사와 회원가입</h2>
 	        <form action="register.do" name="registration">
 	        <label for="id" id="id">아이디 : </label>
              <input type="text" name="id" placeholder="아이디를 입력하세요.">
@@ -247,7 +259,7 @@ $(function(){
              <label for="pass" id="passwd">비밀번호 : </label>
              <input type="text" name="pass" id="pass" placeholder="비밀번호를 입력하세요."><br>
              <label for="pass" id="passwd">비밀번호 : </label>
-             <input type="text" name="pass2" id="pass2" placeholder="비밀번호를 입력하세요"><font id="passResult" ></font><br>
+             <input type="text" name="pass2" id="pass2" placeholder="비밀번호를 입력하세요"><br><font id="passResult" ></font><br>
              <label for="name" id="name">이름 : </label>   
              <input type="text" name="name" placeholder="이름을 입력하세요."><br>
              <label for="email" id="email">이메일 : </label>

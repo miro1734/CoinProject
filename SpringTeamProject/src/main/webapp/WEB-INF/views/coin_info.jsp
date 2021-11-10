@@ -465,6 +465,7 @@ function checkIno() { // 코인인포 페이지 들어갔을 때 코인이 관�
 	* {
 		margin: 0;
 		padding: 0;
+		text-decoration: none;
 	}
 	.btn_container {
 		height: 80px;

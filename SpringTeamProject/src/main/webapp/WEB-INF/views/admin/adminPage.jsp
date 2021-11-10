@@ -6,6 +6,9 @@
 <head>
 <meta charset="UTF-8">
 <title>관리자 페이지</title>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bxslider/4.2.15/jquery.bxslider.min.css" rel="stylesheet" /> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bxslider/4.2.15/jquery.bxslider.min.js"></script>
 <style type="text/css">
 		* {
 			margin: 0;
@@ -54,11 +57,16 @@
        		position : absolute;
        		left : 220px;
        }
+       .main_container {
+       		display: flex;
+       		justify-content: space-around;
+       		margin: 40px;
+       }
+       #headline {
+       		width: 558px;
+       }
 </style>
 </head>
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bxslider/4.2.15/jquery.bxslider.min.css" rel="stylesheet" /> 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bxslider/4.2.15/jquery.bxslider.min.js"></script>
 <script type="text/javascript">
 function selectAllNews(r) {
 	var str = "<h2>뉴스</h2>";
@@ -73,13 +81,11 @@ function selectAllNews(r) {
 		str += "<div class='blank'></div>";
 	}
 	str += "</div>";
-	str += "<div class='news_write'>글쓰기</div>";
-	str += "<form><input type='text' name='headline'>";
-	str += "<button type='button' class='btn_news'>작성</button></form>";
+	str += "<input type='text' name='headline' id='headline'>";
+	str += "<button type='button' class='btn_news'>작성</button>";
 
 	$(".news_container").html(str);
 	$(".news_delete").click(news_delete);
-	$(".news_write	").click(news_write);
 	$(".btn_news").click(btn_news);
 	
 	 $(".slider").bxSlider({
@@ -90,10 +96,6 @@ function selectAllNews(r) {
 	        minSlides : 6,
 	        infiniteLoop : false
 	    });
-}
-//뉴스 게시판 글쓰기 버튼을 누르면 글쓰는 부분이 생성되는 함수
-function news_write() {
-	$("form").css("display", "block");
 }
 //뉴스 게시판 글 삭제하는 함수
 function news_delete() {
@@ -110,8 +112,10 @@ function news_delete() {
 		}
 	});
 }
+// 뉴스 게시판 글 등록하는 부분
 function btn_news() {
-	var data = $("form").serialize();
+	var data = "headline="+$("#headline").val();
+	console.log(data);
 	$.ajax({
 		url : "newsWrite.do",
 		data : data,
@@ -123,9 +127,9 @@ function btn_news() {
 	});
 }
 	$(function(){
-		$(".btn_news").click(function(){
-			btn_news();
-		});
+		$(".btn_news").click(btn_news);
+		$(".news_delete").click(news_delete);
+		
 		$(".slider").bxSlider({
 	        pager : false,
 	        mode : 'vertical',
@@ -145,15 +149,16 @@ function btn_news() {
 				dataType:"json",
 				success:function(r){
 				}
-			})
+			});
 					alert("회원제명완료");
-					location.href="adminSelect.do"
+					location.reload();
 		})
 	})
 </script>
 <body>
 	관리자 페이지
 	<a href="logout.do">로그아웃</a>
+<div class="main_container">
 	<div class="result">
 	<!-- 전체 회원 목록을 출력 -->
 	<c:forEach var="client" items="${requestScope.list }">
@@ -169,7 +174,7 @@ function btn_news() {
 		</c:if>
 	</c:forEach>
 	</div>
-		<div class="news_container">
+	<div class="news_container">
 	        <h2>뉴스</h2>
 	        <div class="slider">
 		        <c:forEach var="news" items="${requestScope.news}">
@@ -181,11 +186,10 @@ function btn_news() {
 		        		</div>
 		        		<div class="blank"></div>
 		        </c:forEach>
-		    </div><div class="news_write">뉴스 쓰기</div>
-		    <form>
-		    	<input type="text" name="headline">
+		    </div>
+		    	<input type="text" name="headline" id="headline">
 		    	<button type="button" class="btn_news">작성</button>
-		    </form>
 	</div>
+</div>
 </body>
 </html>

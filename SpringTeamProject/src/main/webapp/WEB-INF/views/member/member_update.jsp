@@ -17,7 +17,8 @@
     .correction{
         margin: 0 auto;
         width: 898px;
-        height: 1024px;
+        height: 830px;
+        border: 1px solid #e9e9e9;
     }
     h2{
         font-weight: bold;
@@ -32,7 +33,7 @@
         height: 76px;
         font-size: 20px;
         margin-bottom: 10px;
-        margin-left: 110px;
+        margin-left: 140px;
     }
     input{
     	outline: none;
@@ -80,7 +81,7 @@
         height: 60px;
         border-radius: 5px;
         margin-top: 80px;
-        margin-left: 115px;
+        margin-left: 125px;
         background-color: #337ab7;
         font-size: 20px;
         color: white;
@@ -90,6 +91,7 @@
     }
     #passResult{
     	font-size: 15px;
+    	margin-left: 260px;
     }
 </style>
 <script src="/resource/lib/jquery-3.6.0.min.js"></script>
@@ -99,7 +101,6 @@ $(function(){
 		$('#passResult').html('');
 	});
 	$('#pass2').keyup(function(){
-		
 		if($('#pass').val() != $('#pass2').val()){
 	        $('#passResult').html('비밀번호 일치하지 않음');
 	        $('#passResult').attr('color', '#f82a2aa3');
@@ -107,7 +108,10 @@ $(function(){
 	        $('#passResult').html('비밀번호 일치함');
 	        $('#passResult').attr('color', '#199894b3');
 	    }
-	})
+	});
+	$(".cancel_button").click(function(){
+		history.back();
+	});
 })
 </script>
 </head>
@@ -126,19 +130,19 @@ $(function(){
             <c:redirect url="/"/>
         </c:if>
         <h2>다나와 코인<br>
-            회원 수정</h2>
+            회원 정보 수정</h2>
         <form action="memberUpdate.do">
         <label for="id" id="id">아이디 : </label>
         <input type="text" name="id"  class="id" value="${sessionScope.client.id }" readonly><br>
         <label for="pass" id="passwd">비밀번호 : </label>
-        <input type="text" name="pass" id="pass" class="pass" placeholder="암호를 입력하세요"><br>
+        <input type="text" name="pass" id="pass" class="pass" readonly="readonly" value="${sessionScope.client.passwd }"><br>
         <label for="pass" id="passwd">비밀번호 : </label>
-        <input type="text" name="pass2" id="pass2" class="pass" placeholder="암호를 입력하세요"><font id="passResult" ></font><br>
+        <input type="text" name="pass2" id="pass2" class="pass" readonly="readonly" value="${sessionScope.client.passwd }"><br><font id="passResult" ></font><br>
         <label for="name" id="name">이름 : </label>
         <input type="text" name="name" class="name" placeholder="이름을 입력하세요" value="${sessionScope.client.name }"><br>
         <label for="email" id="email">이메일 : </label>
         <input type="text" name="email" class="email" placeholder="이메일을 입력하세요" value="${sessionScope.client.email }"><br>
-        <button type="button" class="update_button">수정하기</button>
+        <button class="update_button">수정하기</button>
         <button type="button" class="cancel_button">취소</button>
         </form>
     </div>

@@ -299,7 +299,7 @@ public class MainController {
 		return "member/member_update";
 	}
 
-	@RequestMapping("memberUpdate.do") // 회원수정 페이지 - 최진욱 10/21
+	@RequestMapping("memberUpdate.do") // 회원수정 기능 - 최진욱 10/21
 	public String memberUpdate(HttpServletRequest request, RedirectAttributes redirectAttributes, HttpSession session)
 			throws IOException {
 		String id = request.getParameter("id");
@@ -492,12 +492,6 @@ public class MainController {
 		return null;
 	}
 	
-	@RequestMapping("login_kakao.do") // 카카오 로그인(), 상표 이미지 누르면  메인 페이지로 이동  - 조광일 11/02
-	public String main_kakao(HttpServletRequest request, HttpSession session, HttpServletResponse response) throws IOException {
-		response.setContentType("text/html;charset=utf-8");
-		return "main";
-	}
-	
 	@RequestMapping("main.do") //카카오 로그인 11/08
     public String kakaologin(HttpServletRequest request,HttpSession session, HttpServletResponse response) throws IOException {
     	String id = request.getParameter("id");
@@ -507,6 +501,8 @@ public class MainController {
 		MemberDTO dto = new MemberDTO(id, passwd, name, email, 0);
 		MemberDTO dto2 = memberService.selectMember(id);
 		session.setAttribute("client", dto);
+		List<NewsDTO> news = newsService.selectAllNews();
+		request.setAttribute("news", news);
 		if(dto2 == null) {
 		memberService.insertCoinMember(dto);
 		session.setAttribute("client", dto);
